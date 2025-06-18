@@ -1,0 +1,126 @@
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f4f8; /* Light blue-gray background */
+            color: #1e293b; /* Dark slate text */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 1rem;
+        }
+        .game-container {
+            width: 100%;
+            max-width: 800px; /* Max width for game content */
+            background-color: white;
+            border-radius: 0.75rem; /* 12px */
+            box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04);
+            padding: 2rem; /* 32px */
+        }
+        .button-primary {
+            background-color: #3b82f6; /* Blue-500 */
+            color: white;
+            transition: background-color 0.3s ease;
+            padding: 0.75rem 1.5rem; /* 12px 24px */
+            border-radius: 0.5rem; /* 8px */
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+        }
+        .button-primary:hover {
+            background-color: #2563eb; /* Blue-600 */
+        }
+        .button-secondary {
+            background-color: #6b7280; /* Gray-500 */
+            color: white;
+            transition: background-color 0.3s ease;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+        }
+        .button-secondary:hover {
+            background-color: #4b5563; /* Gray-600 */
+        }
+        .button-module {
+            background-color: #10b981; /* Emerald-500 */
+            color: white;
+            transition: background-color 0.3s ease;
+            padding: 1rem 1.5rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            width: 100%;
+            text-align: left;
+        }
+        .button-module:hover {
+            background-color: #059669; /* Emerald-600 */
+        }
+        .hidden { display: none; }
+
+        /* Hardware Module Specific */
+        .draggable { cursor: grab; user-select: none; }
+        .dragging { opacity: 0.7; cursor: grabbing; border: 2px dashed #3b82f6; }
+        .drop-zone { border: 2px dashed #9ca3af; transition: background-color 0.3s ease, border-color 0.3s ease; min-height: 4rem; }
+        .drop-zone.hovered { background-color: #dbeafe; border-color: #60a5fa; }
+        .drop-zone.correct { background-color: #dcfce7; border-color: #22c55e; }
+        .drop-zone.incorrect { background-color: #fee2e2; border-color: #ef4444; }
+        .component-image { width: 100%; height: 120px; object-fit: contain; border-radius: 0.5rem; }
+        
+        /* Keyboard Conqueror Specific */
+        #kc-char-display {
+            font-size: 5rem; /* 80px */
+            font-weight: bold;
+            color: #3b82f6; /* Blue-500 */
+            padding: 2rem;
+            margin: 1rem 0;
+            background-color: #eff6ff; /* Blue-50 */
+            border-radius: 0.5rem;
+            min-height: 120px; /* Ensure consistent height */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background-color 0.2s ease, color 0.2s ease;
+        }
+        #kc-char-display.correct { background-color: #dcfce7; color: #16a34a; } /* Green */
+        #kc-char-display.incorrect { background-color: #fee2e2; color: #dc2626; } /* Red */
+
+        /* Mouse Master Specific */
+        #mm-play-area {
+            width: 100%;
+            height: 300px;
+            background-color: #f3f4f6; /* Gray-100 */
+            border: 2px solid #d1d5db; /* Gray-300 */
+            border-radius: 0.5rem;
+            position: relative; /* For positioning targets */
+            overflow: hidden; /* Keep targets within bounds */
+            cursor: crosshair;
+        }
+        .mm-target {
+            width: 50px;
+            height: 50px;
+            background-color: #ef4444; /* Red-500 */
+            border-radius: 50%;
+            position: absolute;
+            cursor: pointer;
+            transition: transform 0.1s ease, background-color 0.1s ease;
+        }
+        .mm-target:hover {
+            background-color: #dc2626; /* Red-600 */
+            transform: scale(1.1);
+        }
+
+        .feedback-message { min-height: 1.5rem; font-weight: 600; margin-top: 0.5rem;}
+
+        .modal {
+            display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%;
+            overflow: auto; background-color: rgba(0,0,0,0.5); align-items: center; justify-content: center;
+        }
+        .modal-content {
+            background-color: #ffffff; margin: auto; padding: 2rem; border-radius: 0.75rem;
+            box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04);
+            width: 90%; max-width: 500px; text-align: center;
+        }
