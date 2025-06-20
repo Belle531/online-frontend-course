@@ -184,12 +184,12 @@ section {
 
 @media (min-width: 768px) {
     .card-container {
-        grid-template-columns: repeat(4, 1fr);/*add card the rows
+        grid-template-columns: repeat(4, 1fr);/*add card the rows/* /*
     }
 }
 
-@media (max-width: 768px) {
+@media (min-width: 768px) {
     .card-container {
-        grid-template-columns: 1fr;
+        grid-template-columns: repeat(4, 1fr); /* add card the rows */ /* <-- FIXED! */
     }
 }
