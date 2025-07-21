@@ -1,0 +1,866 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CMoore Front-End Fundamentals Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'ocean-blue': '#0E5B75',        /* Primary Accent: Deep Ocean Blue */
+                        'ocean-blue-dark': '#0A4A5D',   /* Darker shade for hover states */
+                        'sage-green': '#8DAA9D',        /* Secondary Accent: Soft Sage Green */
+                        'sage-green-dark': '#759185',   /* Darker shade for hover states */
+                        'off-white': '#F9F9F9',         /* Background: Very Light Grey / Off-White */
+                        'charcoal-dark': '#333333',     /* Text: Dark Charcoal Grey */
+                        'charcoal-light': '#555555',    /* Slightly lighter text for secondary info */
+                        'subtle-grey': '#E0E0E0',       /* Borders, Dividers, Disabled states */
+                        'code-block-bg': '#EEEEEE',     /* Background for code blocks */
+                        'goldenrod': '#EBA83A',         /* Highlight/Alert: Muted Goldenrod */
+                        'red-alert': '#EF4444',         /* Red for overdue assignments */
+                    },
+                    fontFamily: {
+                        inter: ['Inter', 'sans-serif'],
+                        montserrat: ['Montserrat', 'sans-serif'],
+                        firacode: ['Fira Code', 'monospace'],
+                    },
+                    boxShadow: {
+                        'custom': '0 4px 12px rgba(0, 0, 0, 0.05)', /* Subtle shadow for cards */
+                    }
+                }
+            }
+        }
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Montserrat:wght@500;600;700&family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        /* Base styles for the body to ensure full height and font application */
+        body {
+            font-family: 'Inter', sans-serif; /* Default body font */
+            color: #333333; /* Default text color */
+            background-color: #F9F9F9; /* Default background color */
+            min-height: 100vh; /* Ensure body takes full viewport height */
+            display: flex; /* Use flexbox for main layout */
+            flex-direction: column; /* Stack header, main content vertically */
+        }
+
+        /* Custom scrollbar for better aesthetics (optional, but nice) */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #ccc;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #bbb;
+        }
+
+        /* Styles for the module dropdowns */
+        .module-dropdown-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+        }
+        .module-dropdown-content.active {
+            max-height: 500px; /* Adjust as needed for content height */
+            transition: max-height 0.5s ease-in;
+        }
+        .rotate-icon {
+            transition: transform 0.3s ease-in-out;
+        }
+        .rotate-icon.active {
+            transform: rotate(90deg);
+        }
+
+        /* --- FORCED DESKTOP LAYOUT FOR SIDEBAR AND MAIN CONTENT --- */
+        /* Ensure sidebar is always visible and in flow */
+        .sidebar {
+            transform: translateX(0) !important; /* Always show sidebar */
+            position: relative !important; /* Keep it in document flow */
+            height: 100%; /* Ensure it takes full height */
+            z-index: 10; /* Adjust z-index if needed, lower than header dropdowns */
+        }
+        /* Hide the mobile overlay */
+        .overlay {
+            display: none !important; /* Never show overlay */
+        }
+        /* Hide the mobile menu button */
+        #menu-button {
+            display: none !important; /* Never show hamburger menu */
+        }
+
+        /* Force modules overview panel to always take 1/3 width */
+        #modules-overview-panel {
+            width: 33.333333% !important; /* Always 1/3 width */
+            margin-right: 1.5rem !important; /* Consistent right margin */
+            margin-bottom: 0 !important; /* No bottom margin when in row */
+        }
+        /* --- END FORCED DESKTOP LAYOUT --- */
+
+
+        /* Custom Toggle Switch Styles */
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 44px; /* Wider for better touch target */
+            height: 24px; /* Taller */
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 24px; /* Half of height for full roundness */
+        }
+
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 18px; /* Slightly smaller than slider height */
+            width: 18px; /* Square for circle */
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .toggle-slider {
+            background-color: #8DAA9D; /* Sage Green */
+        }
+
+        input:focus + .toggle-slider {
+            box-shadow: 0 0 1px #8DAA9D;
+        }
+
+        input:checked + .toggle-slider:before {
+            transform: translateX(20px); /* Move slider to the right */
+        }
+    </style>
+</head>
+<body class="font-inter">
+    <div id="overlay" class="overlay fixed inset-0 bg-black bg-opacity-50 z-40 hidden"></div>
+
+    <header class="bg-white shadow-sm py-3 px-4 md:px-8 lg:px-12 flex items-center justify-between z-10 relative">
+        <div class="flex flex-col items-start">
+            <a href="#" class="flex items-center group" data-page="home">
+                <h1 class="text-xl md:text-2xl font-montserrat font-bold text-ocean-blue group-hover:text-ocean-blue-dark transition-colors duration-200">CMoore Fundamentals</h1>
+            </a>
+            <button id="menu-button" class="md:hidden p-2 rounded-md hover:bg-subtle-grey mt-1">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-charcoal-dark" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+                </svg>
+            </button>
+        </div>
+
+        <div class="flex items-center space-x-4">
+            <div class="relative w-48 hidden md:block">
+                <input type="text" placeholder="Search..." class="w-full bg-subtle-grey rounded-full py-1.5 pl-3 pr-8 text-charcoal-dark focus:outline-none focus:ring-1 focus:ring-ocean-blue">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-charcoal-light absolute right-3 top-1/2 -translate-y-1/2" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+            </div>
+
+            <div class="relative">
+                <button id="message-button" class="p-2 rounded-full hover:bg-subtle-grey transition-colors duration-200 relative">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-charcoal-dark" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                    </svg>
+                    <span class="absolute top-1 right-1 block w-3 h-3 bg-ocean-blue rounded-full border-2 border-white"></span>
+                </button>
+                <div id="message-dropdown" class="absolute right-0 mt-2 w-80 bg-white rounded-lg shadow-lg py-2 border border-subtle-grey hidden z-40">
+                    <div class="flex items-center justify-between px-4 py-2 border-b border-subtle-grey">
+                        <h4 class="text-charcoal-dark font-semibold">Messages</h4>
+                        <div class="flex items-center space-x-2">
+                            <button class="p-1 rounded-full hover:bg-subtle-grey">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-charcoal-light" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                </svg>
+                            </button>
+                            <button class="bg-ocean-blue text-white text-sm px-3 py-1 rounded-md hover:bg-ocean-blue-dark">
+                                New Message
+                            </button>
+                        </div>
+                    </div>
+                    <div class="px-4 py-2 relative">
+                        <input type="text" placeholder="Search messages..." class="w-full p-2 pr-10 border border-subtle-grey rounded-lg text-charcoal-dark focus:outline-none focus:ring-1 focus:ring-ocean-blue">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-charcoal-light absolute right-6 top-1/2 -translate-y-1/2" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                    </div>
+                    <div class="max-h-60 overflow-y-auto">
+                        <div class="px-4 py-2 text-charcoal-light text-xs uppercase font-semibold border-b border-subtle-grey">Starred</div>
+                        <a href="#" class="flex items-center space-x-3 px-4 py-3 hover:bg-subtle-grey transition-colors duration-200 border-b border-subtle-grey">
+                            <img src="https://placehold.co/32x32/8DAA9D/FFFFFF?text=TA" alt="TA Profile" class="w-8 h-8 rounded-full object-cover">
+                            <div>
+                                <p class="text-charcoal-dark text-sm font-medium">TA Sarah (Module 3)</p>
+                                <p class="text-charcoal-light text-xs truncate">"Great question! Check out the docs on Flexbox..."</p>
+                            </div>
+                        </a>
+                        <div class="px-4 py-2 text-charcoal-light text-xs uppercase font-semibold border-b border-subtle-grey">Students</div>
+                        <a href="#" class="flex items-center space-x-3 px-4 py-3 hover:bg-subtle-grey transition-colors duration-200 border-b border-subtle-grey">
+                            <img src="https://placehold.co/32x32/EBA83A/FFFFFF?text=AL" alt="Student Profile" class="w-8 h-8 rounded-full object-cover">
+                            <div>
+                                <p class="text-charcoal-dark text-sm font-medium">Alice L.</p>
+                                <p class="text-charcoal-light text-xs truncate">"Can you help me with the CSS assignment?"</p>
+                            </div>
+                        </a>
+                        <a href="#" class="flex items-center space-x-3 px-4 py-3 hover:bg-subtle-grey transition-colors duration-200 border-b border-subtle-grey">
+                            <img src="https://placehold.co/32x32/0E5B75/FFFFFF?text=MB" alt="Student Profile" class="w-8 h-8 rounded-full object-cover">
+                            <div>
+                                <p class="text-charcoal-dark text-sm font-medium">Mark B.</p>
+                                <p class="text-charcoal-light text-xs truncate">"Thanks for the tip on the new framework!"</p>
+                            </div>
+                        </a>
+                        <div class="px-4 py-2 text-charcoal-light text-xs uppercase font-semibold border-b border-subtle-grey">Groups</div>
+                        <a href="#" class="flex items-center space-x-3 px-4 py-3 hover:bg-subtle-grey transition-colors duration-200 border-b border-subtle-grey">
+                            <div class="w-8 h-8 rounded-full bg-sage-green flex items-center justify-center text-white text-sm">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M17 20h2a2 2 0 002-2V8a2 2 0 00-2-2h-2M17 20v-2a2 2 0 00-2-2H9a2 2 0 00-2 2v2M17 20h-2M7 12v-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                                </svg>
+                            </div>
+                            <div>
+                                <p class="text-charcoal-dark text-sm font-medium">Project Alpha Team</p>
+                                <p class="text-charcoal-light text-xs truncate">"Meeting at 3 PM today to discuss progress."</p>
+                            </div>
+                        </a>
+                        <div class="px-4 py-2 text-charcoal-light text-xs uppercase font-semibold border-b border-subtle-grey">Private</div>
+                        <a href="#" class="flex items-center space-x-3 px-4 py-3 hover:bg-subtle-grey transition-colors duration-200">
+                            <div class="w-8 h-8 rounded-full bg-goldenrod flex items-center justify-center text-white text-sm">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v3h8z" />
+                                </svg>
+                            </div>
+                            <div>
+                                <p class="text-charcoal-dark text-sm font-medium">Instructor (Feedback)</p>
+                                <p class="text-charcoal-light text-xs truncate">"Your Module 2 project feedback is ready."</p>
+                            </div>
+                        </a>
+                    </div>
+                    <a href="#" class="block text-center px-4 py-2 text-ocean-blue font-medium hover:bg-subtle-grey transition-colors duration-200 border-t border-subtle-grey">
+                        View All Messages
+                    </a>
+                </div>
+            </div>
+
+            <div class="relative">
+                <button id="notification-button" class="p-2 rounded-full hover:bg-subtle-grey transition-colors duration-200 relative">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-charcoal-dark" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M15 17H8a2 2 0 01-2-2V5a2 2 0 012-2h2c.55 0 1 .45 1 1v1h2V4a2 2 0 012-2h2a2 2 0 012 2v12a2 2 0 01-2 2h-7z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M15 17v2a2 2 0 01-2 2H8a2 2 0 01-2-2v-2m9 0H6" />
+                    </svg>
+                    <span class="absolute top-1 right-1 block w-3 h-3 bg-red-alert rounded-full border-2 border-white"></span>
+                </button>
+                <div id="notification-dropdown" class="absolute right-0 mt-2 w-72 bg-white rounded-lg shadow-lg py-2 border border-subtle-grey hidden z-40">
+                    <div class="px-4 py-2 text-charcoal-dark font-semibold border-b border-subtle-grey">Notifications</div>
+                    <div class="max-h-60 overflow-y-auto">
+                        <a href="#" class="block px-4 py-3 hover:bg-subtle-grey transition-colors duration-200 border-b border-subtle-grey last:border-b-0">
+                            <p class="text-charcoal-dark text-sm font-medium">Assignment: HTML Forms Due Soon</p>
+                            <p class="text-sage-green text-xs">Due in 2 days (July 18, 2025, 5:00 PM)</p>
+                        </a>
+                        <a href="#" class="block px-4 py-3 hover:bg-subtle-grey transition-colors duration-200 border-b border-subtle-grey last:border-b-0">
+                            <p class="text-charcoal-dark text-sm font-medium">Assignment: CSS Layouts Overdue</p>
+                            <p class="text-red-alert text-xs">Overdue by 5 days (July 11, 2025, 10:00 AM)</p>
+                        </a>
+                        <a href="#" class="block px-4 py-3 hover:bg-subtle-grey transition-colors duration-200 border-b border-subtle-grey last:border-b-0">
+                            <p class="text-charcoal-dark text-sm font-medium">New Forum Post: Module 3 Questions</p>
+                            <p class="text-charcoal-light text-xs">1 hour ago</p>
+                        </a>
+                        <a href="#" class="block px-4 py-3 hover:bg-subtle-grey transition-colors duration-200 border-b border-subtle-grey last:border-b-0">
+                            <p class="text-charcoal-dark text-sm font-medium">Google Meet Recording Available</p>
+                            <p class="text-charcoal-light text-xs">Live Session: July 15, 2025</p>
+                        </a>
+                    </div>
+                    <a href="#" class="block text-center px-4 py-2 text-ocean-blue font-medium hover:bg-subtle-grey transition-colors duration-200 border-t border-subtle-grey">
+                        View All Notifications
+                    </a>
+                </div>
+            </div>
+
+            <div class="relative">
+                <button id="user-menu-button" class="flex items-center space-x-2 p-2 rounded-full hover:bg-subtle-grey transition-colors duration-200">
+                    <img src="https://placehold.co/40x40/0E5B75/FFFFFF?text=CM" alt="User Profile" class="w-10 h-10 rounded-full border-2 border-ocean-blue object-cover">
+                    <span class="font-medium text-charcoal-dark hidden sm:block">Cassandra M.</span>
+                    <svg id="user-menu-arrow" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-charcoal-dark rotate-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+                    </svg>
+                </button>
+                <div id="user-menu-dropdown" class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg py-2 border border-subtle-grey hidden z-40">
+                    <a href="#" class="block px-4 py-2 text-charcoal-dark hover:bg-subtle-grey transition-colors duration-200" data-page="profile">Profile</a>
+                    <a href="#" class="block px-4 py-2 text-charcoal-dark hover:bg-subtle-grey transition-colors duration-200" data-page="grades">Grades</a>
+                    <a href="#" class="block px-4 py-2 text-charcoal-dark hover:bg-subtle-grey transition-colors duration-200" data-page="calendar">Calendar</a>
+                    <a href="#" class="block px-4 py-2 text-charcoal-dark hover:bg-subtle-grey transition-colors duration-200" data-page="messages">Messages</a>
+                    <a href="#" class="block px-4 py-2 text-charcoal-dark hover:bg-subtle-grey transition-colors duration-200" data-page="private-files">Private Files</a>
+                    <a href="#" class="block px-4 py-2 text-charcoal-dark hover:bg-subtle-grey transition-colors duration-200" data-page="reports">Reports</a>
+                    <a href="#" class="block px-4 py-2 text-charcoal-dark hover:bg-subtle-grey transition-colors duration-200" data-page="notification-preferences">Preferences</a>
+                    <div class="relative group">
+                        <button class="w-full text-left px-4 py-2 text-charcoal-dark hover:bg-subtle-grey transition-colors duration-200 flex items-center justify-between">
+                            Language
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-charcoal-dark" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+                            </svg>
+                        </button>
+                        <div class="absolute left-full top-0 ml-1 w-32 bg-white rounded-lg shadow-lg py-1 border border-subtle-grey hidden group-hover:block">
+                            <a href="#" class="block px-4 py-2 text-charcoal-dark hover:bg-subtle-grey">English</a>
+                            <a href="#" class="block px-4 py-2 text-charcoal-dark hover:bg-subtle-grey">Español</a>
+                            <a href="#" class="block px-4 py-2 text-charcoal-dark hover:bg-subtle-grey">Français</a>
+                        </div>
+                    </div>
+                    <div class="border-t border-subtle-grey my-2"></div>
+                    <a href="#" class="block px-4 py-2 text-red-600 hover:bg-red-50 transition-colors duration-200">Logout</a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="flex flex-1 flex-col px-6 lg:px-12 pb-6 lg:pb-12 overflow-hidden">
+        <h2 class="text-3xl font-montserrat font-bold text-charcoal-dark mb-6 pt-6 lg:pt-12 text-center">Welcome to CMoore Front-End-Development Fundamentals Online Course</h2>
+
+        <div class="flex flex-1 flex-col lg:flex-row h-full lg:space-x-6">
+
+            <nav id="sidebar" class="sidebar w-64 bg-white shadow-md p-6 flex flex-col space-y-2 border-r border-subtle-grey flex-shrink-0 mb-6 lg:mb-0">
+                <a href="#" class="flex items-center space-x-3 p-3 rounded-lg text-charcoal-dark hover:bg-subtle-grey transition-colors duration-200" data-page="home">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m0 0l7 7m-14 0v10a1 1 0 001 1h3m-4 0a1 1 0 001 1h7a1 1 0 001-1M12 4v10" />
+                    </svg>
+                    <span class="font-medium">Home</span>
+                </a>
+                <a href="#" class="flex items-center space-x-3 p-3 rounded-lg text-charcoal-dark hover:bg-subtle-grey transition-colors duration-200" data-page="dashboard">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                    </svg>
+                    <span class="font-medium">Dashboard</span>
+                </a>
+                <a href="#" class="flex items-center space-x-3 p-3 rounded-lg text-ocean-blue font-semibold bg-subtle-grey transition-colors duration-200" data-page="my-courses">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                    </svg>
+                    <span class="font-medium">My Courses</span>
+                </a>
+
+                <div class="border-t border-subtle-grey my-4 pt-4"></div> <h3 class="text-lg font-montserrat font-semibold text-charcoal-dark mb-4">Course Modules</h3>
+
+                <div class="module-item">
+                    <button class="module-toggle flex items-center justify-between w-full p-3 rounded-lg text-charcoal-dark hover:bg-subtle-grey transition-colors duration-200" data-module-id="1">
+                        <span class="font-medium">Module 1: Web Basics</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 rotate-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+                        </svg>
+                    </button>
+                    <div class="module-dropdown-content pl-6 pt-2 pb-1 space-y-1">
+                        <a href="#" class="block text-charcoal-light hover:text-ocean-blue text-sm py-1">Lesson 1.1: How the Web Works</a>
+                        <a href="#" class="block text-charcoal-light hover:text-ocean-blue text-sm py-1">Lesson 1.2: HTML Structure</a>
+                        <a href="#" class="block text-charcoal-light hover:text-ocean-blue text-sm py-1">Quiz: Web Basics</a>
+                    </div>
+                </div>
+
+                <div class="module-item">
+                    <button class="module-toggle flex items-center justify-between w-full p-3 rounded-lg text-charcoal-dark hover:bg-subtle-grey transition-colors duration-200" data-module-id="2">
+                        <span class="font-medium">Module 2: HTML Deep Dive</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 rotate-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+                        </svg>
+                    </button>
+                    <div class="module-dropdown-content pl-6 pt-2 pb-1 space-y-1">
+                        <a href="#" class="block text-charcoal-light hover:text-ocean-blue text-sm py-1">Lesson 2.1: Semantic HTML</a>
+                        <a href="#" class="block text-charcoal-light hover:text-ocean-blue text-sm py-1">Lesson 2.2: Forms & Inputs</a>
+                        <a href="#" class="block text-charcoal-light hover:text-ocean-blue text-sm py-1">Challenge: Build a Form</a>
+                    </div>
+                </div>
+
+                <div class="module-item">
+                    <button class="module-toggle flex items-center justify-between w-full p-3 rounded-lg text-charcoal-dark hover:bg-subtle-grey transition-colors duration-200" data-module-id="3">
+                        <span class="font-medium">Module 3: CSS Styling</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 rotate-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+                        </svg>
+                    </button>
+                    <div class="module-dropdown-content pl-6 pt-2 pb-1 space-y-1">
+                        <a href="#" class="block text-charcoal-light hover:text-ocean-blue text-sm py-1">Lesson 3.1: CSS Selectors (Current)</a>
+                        <a href="#" class="block text-charcoal-light hover:text-ocean-blue text-sm py-1">Lesson 3.2: Box Model</a>
+                        <a href="#" class="block text-charcoal-light hover:text-ocean-blue text-sm py-1">Project: Styled Portfolio</a>
+                    </div>
+                </div>
+
+                <div class="module-item">
+                    <button class="module-toggle flex items-center justify-between w-full p-3 rounded-lg text-charcoal-dark hover:bg-subtle-grey transition-colors duration-200" data-module-id="4">
+                        <span class="font-medium">Module 4: CSS Layouts</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 rotate-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+                        </svg>
+                    </button>
+                    <div class="module-dropdown-content pl-6 pt-2 pb-1 space-y-1">
+                        <a href="#" class="block text-charcoal-light hover:text-ocean-blue text-sm py-1">Lesson 4.1: Flexbox</a>
+                        <a href="#" class="block text-charcoal-light hover:text-ocean-blue text-sm py-1">Lesson 4.2: CSS Grid</a>
+                    </div>
+                </div>
+
+                <div class="module-item">
+                    <button class="module-toggle flex items-center justify-between w-full p-3 rounded-lg text-charcoal-dark hover:bg-subtle-grey transition-colors duration-200" data-module-id="5">
+                        <span class="font-medium">Module 5: Responsive Design</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 rotate-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+                        </svg>
+                    </button>
+                    <div class="module-dropdown-content pl-6 pt-2 pb-1 space-y-1">
+                        <a href="#" class="block text-charcoal-light hover:text-ocean-blue text-sm py-1">Lesson 5.1: Media Queries</a>
+                    </div>
+                </div>
+
+                <div class="module-item">
+                    <button class="module-toggle flex items-center justify-between w-full p-3 rounded-lg text-charcoal-dark hover:bg-subtle-grey transition-colors duration-200" data-module-id="6">
+                        <span class="font-medium">Module 6: JavaScript Basics</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 rotate-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+                        </svg>
+                    </button>
+                    <div class="module-dropdown-content pl-6 pt-2 pb-1 space-y-1">
+                        <a href="#" class="block text-charcoal-light hover:text-ocean-blue text-sm py-1">Lesson 6.1: Intro to JavaScript</a>
+                        <a href="#" class="block text-charcoal-light hover:text-ocean-blue text-sm py-1">Lesson 6.2: Variables & Data Types</a>
+                        <a href="#" class="block text-charcoal-light hover:text-ocean-blue text-sm py-1">Challenge: Simple Calculator</a>
+                    </div>
+                </div>
+
+                </nav>
+
+            <main id="dynamic-content-area" class="flex-1 p-6 bg-off-white overflow-y-auto min-w-0">
+                <div id="main-content-container">
+                    </div>
+            </main>
+
+            <aside class="w-80 bg-white shadow-md p-6 flex flex-col space-y-6 flex-shrink-0">
+                <h3 class="text-2xl font-montserrat font-bold text-charcoal-dark mb-4">My Progress</h3>
+                <div class="bg-white rounded-lg shadow-custom p-0 border border-subtle-grey">
+                    <div class="flex border-b border-subtle-grey">
+                        <button id="overview-tab" class="flex-1 py-3 text-center text-charcoal-dark font-medium border-b-2 border-transparent hover:bg-subtle-grey transition-colors duration-200 tab-button" data-tab="overview">
+                            Overview
+                        </button>
+                        <button id="modules-tab" class="flex-1 py-3 text-center text-charcoal-dark font-medium border-b-2 border-transparent hover:bg-subtle-grey transition-colors duration-200 tab-button" data-tab="modules">
+                            Modules
+                        </button>
+                    </div>
+
+                    <div class="p-6">
+                        <div id="overview-content" class="tab-content">
+                            <div class="grid grid-cols-1 gap-4">
+                                <a href="#" class="bg-white rounded-lg p-4 shadow-custom flex items-center space-x-4 border border-subtle-grey cursor-pointer hover:bg-subtle-grey transition-colors duration-200" data-page="my-courses">
+                                    <div class="p-2 bg-ocean-blue rounded-full text-white">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 10h16M4 14h16M4 18h16" />
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <p class="text-charcoal-light text-sm">Total Modules</p>
+                                        <p class="text-charcoal-dark text-xl font-bold">10</p>
+                                    </div>
+                                </a>
+                                <a href="#" class="bg-white rounded-lg p-4 shadow-custom flex items-center space-x-4 border border-subtle-grey cursor-pointer hover:bg-subtle-grey transition-colors duration-200" data-page="modules">
+                                    <div class="p-2 bg-sage-green rounded-full text-white">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <p class="text-charcoal-light text-sm">Modules Completed</p>
+                                        <p class="text-charcoal-dark text-xl font-bold">3</p>
+                                    </div>
+                                </a>
+                                <a href="#" class="bg-white rounded-lg p-4 shadow-custom flex items-center space-x-4 border border-subtle-grey cursor-pointer hover:bg-subtle-grey transition-colors duration-200" data-page="grades">
+                                    <div class="p-2 bg-goldenrod rounded-full text-white">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 19V6l12-3v14.07M9 19H5a2 2 0 01-2-2V7a2 2 0 012-2h4M21 5l-4-2H5a2 2 0 00-2 2v10a2 2 0 002 2h14a2 2 0 002-2V5zm-8 4l-4 2m8-4l-4 2m-4 2l-4 2" />
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <p class="text-charcoal-light text-sm">Avg. Grade</p>
+                                        <p class="text-charcoal-dark text-xl font-bold">88%</p>
+                                    </div>
+                                </a>
+
+                                <a href="#" class="bg-white rounded-lg p-4 shadow-custom flex items-center space-x-4 border border-subtle-grey cursor-pointer hover:bg-subtle-grey transition-colors duration-200" data-page="course-info">
+                                    <div class="p-2 bg-ocean-blue rounded-full text-white">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <p class="text-charcoal-light text-sm">Course</p>
+                                        <p class="text-charcoal-dark text-xl font-bold">View Info</p>
+                                    </div>
+                                </a>
+
+                                <a href="#" class="bg-white rounded-lg p-4 shadow-custom flex items-center space-x-4 border border-subtle-grey cursor-pointer hover:bg-subtle-grey transition-colors duration-200" data-page="participants">
+                                    <div class="p-2 bg-sage-green rounded-full text-white">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M17 20h2a2 2 0 002-2V8a2 2 0 00-2-2h-2M17 20v-2a2 2 0 00-2-2H9a2 2 0 00-2 2v2M17 20h-2M7 12v-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <p class="text-charcoal-light text-sm">Participants</p>
+                                        <p class="text-charcoal-dark text-xl font-bold">25 Students</p>
+                                    </div>
+                                </a>
+
+                                <a href="#" class="bg-white rounded-lg p-4 shadow-custom flex items-center space-x-4 border border-subtle-grey cursor-pointer hover:bg-subtle-grey transition-colors duration-200" data-page="activities">
+                                    <div class="p-2 bg-goldenrod rounded-full text-white">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <p class="text-charcoal-light text-sm">Activities</p>
+                                        <p class="text-charcoal-dark text-xl font-bold">3 Overdue</p>
+                                    </div>
+                                </a>
+
+                                <a href="#" class="bg-white rounded-lg p-4 shadow-custom flex items-center space-x-4 border border-subtle-grey cursor-pointer hover:bg-subtle-grey transition-colors duration-200" data-page="competencies">
+                                    <div class="p-2 bg-ocean-blue rounded-full text-white">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M11.002 2.115a1.5 1.5 0 011.996 0L20.89 7.79a1.5 1.5 0 01.11 2.21l-7.79 7.076a1.5 1.5 0 01-2.21-.11L2.115 11.002a1.5 1.5 0 010-1.996L7.79 3.11a1.5 1.5 0 012.21-.11z" />
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <p class="text-charcoal-light text-sm">Competencies</p>
+                                        <p class="text-charcoal-dark text-xl font-bold">View Progress</p>
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
+
+                        <div id="modules-content" class="tab-content hidden">
+                            <ul class="space-y-4">
+                                <li>
+                                    <div class="flex items-center justify-between mb-2">
+                                        <span class="font-medium text-charcoal-dark">Module 1: Web Basics</span>
+                                        <span class="text-sage-green text-sm font-semibold">100% Complete</span>
+                                    </div>
+                                    <div class="w-full bg-subtle-grey rounded-full h-2.5">
+                                        <div class="bg-sage-green h-2.5 rounded-full" style="width: 100%;"></div>
+                                    </div>
+                                </li>
+                                <li>
+                                    <div class="flex items-center justify-between mb-2">
+                                        <span class="font-medium text-charcoal-dark">Module 2: HTML Deep Dive</span>
+                                        <span class="text-sage-green text-sm font-semibold">100% Complete</span>
+                                    </div>
+                                    <div class="w-full bg-subtle-grey rounded-full h-2.5">
+                                        <div class="bg-sage-green h-2.5 rounded-full" style="width: 100%;"></div>
+                                    </div>
+                                </li>
+                                <li>
+                                    <div class="flex items-center justify-between mb-2">
+                                        <span class="font-medium text-charcoal-dark">Module 3: CSS Styling</span>
+                                        <span class="text-goldenrod text-sm font-semibold">60% Complete</span>
+                                    </div>
+                                    <div class="w-full bg-subtle-grey rounded-full h-2.5">
+                                        <div class="bg-goldenrod h-2.5 rounded-full" style="width: 60%;"></div>
+                                    </div>
+                                </li>
+                                <li>
+                                    <div class="flex items-center justify-between mb-2">
+                                        <span class="font-medium text-charcoal-dark">Module 4: CSS Layouts</span>
+                                        <span class="text-red-alert text-sm font-semibold">0% Complete</span>
+                                    </div>
+                                    <div class="w-full bg-subtle-grey rounded-full h-2.5">
+                                        <div class="bg-red-alert h-2.5 rounded-full" style="width: 0%;"></div>
+                                    </div>
+                                </li>
+                                </ul>
+                        </div>
+                    </div>
+                </div>
+            </aside>
+
+        </div> </div>
+
+    <div class="fixed bottom-4 right-4 z-50">
+        <button id="chatbot-toggle" class="bg-ocean-blue text-white p-4 rounded-full shadow-lg hover:bg-ocean-blue-dark transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-ocean-blue focus:ring-opacity-50">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
+            </svg>
+        </button>
+
+        <div id="chatbot-window" class="hidden absolute bottom-20 right-0 w-80 h-96 bg-white rounded-lg shadow-xl flex flex-col border border-subtle-grey">
+            <div class="bg-ocean-blue text-white p-3 rounded-t-lg flex items-center justify-between">
+                <h3 class="font-semibold">CMoore AI Assistant</h3>
+                <button id="chatbot-close" class="p-1 rounded-full hover:bg-ocean-blue-dark">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+
+            <div class="flex-1 overflow-y-auto p-4 space-y-4">
+                <div class="flex items-start space-x-3">
+                    <img src="https://placehold.co/32x32/8DAA9D/FFFFFF?text=AI" alt="AI Profile" class="w-8 h-8 rounded-full object-cover">
+                    <div class="bg-subtle-grey p-3 rounded-lg max-w-[80%] text-charcoal-dark">
+                        <p class="text-sm">Hello! How can I assist you with your Front-End Fundamentals course today? Feel free to ask about modules, assignments, or general web development concepts.</p>
+                        <span class="text-xs text-charcoal-light block text-right mt-1">1:38 PM</span>
+                    </div>
+                </div>
+                <div class="flex items-start justify-end space-x-3">
+                    <div class="bg-ocean-blue text-white p-3 rounded-lg max-w-[80%]">
+                        <p class="text-sm">What's the difference between `position: relative` and `position: absolute`?</p>
+                        <span class="text-xs text-white block text-right mt-1">1:39 PM</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="border-t border-subtle-grey p-4">
+                <div class="flex items-center space-x-2">
+                    <input type="text" placeholder="Type your message..." class="flex-1 p-2 border border-subtle-grey rounded-lg text-charcoal-dark focus:outline-none focus:ring-1 focus:ring-ocean-blue">
+                    <button class="bg-ocean-blue text-white p-2 rounded-lg hover:bg-ocean-blue-dark transition-colors duration-200">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const userMenuButton = document.getElementById('user-menu-button');
+            const userMenuDropdown = document.getElementById('user-menu-dropdown');
+            const userMenuArrow = document.getElementById('user-menu-arrow');
+            const messageButton = document.getElementById('message-button');
+            const messageDropdown = document.getElementById('message-dropdown');
+            const notificationButton = document.getElementById('notification-button');
+            const notificationDropdown = document.getElementById('notification-dropdown');
+            const menuButton = document.getElementById('menu-button');
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('overlay');
+            const moduleToggles = document.querySelectorAll('.module-toggle');
+            const mainNavLinks = document.querySelectorAll('nav a[data-page]');
+
+            // Tabs for My Progress section
+            const overviewTab = document.getElementById('overview-tab');
+            const modulesTab = document.getElementById('modules-tab');
+            const overviewContent = document.getElementById('overview-content');
+            const modulesContent = document.getElementById('modules-content');
+            const tabButtons = document.querySelectorAll('.tab-button');
+            const tabContents = document.querySelectorAll('.tab-content');
+
+            // Chatbot elements
+            const chatbotToggle = document.getElementById('chatbot-toggle');
+            const chatbotWindow = document.getElementById('chatbot-window');
+            const chatbotClose = document.getElementById('chatbot-close');
+
+            // NEW: Main content container for dynamic loading
+            const mainContentContainer = document.getElementById('main-content-container');
+
+            // Map data-page values to their corresponding HTML files
+            const pageMap = {
+                'home': 'home-content.html',
+                'dashboard': 'home-content.html', // Alias for home
+                'my-courses': 'my-courses-content.html',
+                'profile': 'profile-content.html',
+                'grades': 'grades-content.html',
+                'calendar': 'calendar-content.html',
+                'messages': 'messages-content.html', // You'd create this file
+                'private-files': 'private-files-content.html',
+                'reports': 'reports-content.html',
+                'notification-preferences': 'notification-preferences-content.html', // You'd create this file
+                'course-info': 'course-info-content.html', // You'd create this file
+                'participants': 'participants-content.html', // You'd create this file
+                'activities': 'activities-content.html', // You'd create this file
+                'competencies': 'competencies-content.html', // You'd create this file
+            };
+
+
+            // Function to hide all dropdowns and chatbot
+            function hideAllPopups() {
+                userMenuDropdown.classList.add('hidden');
+                userMenuArrow.classList.remove('active');
+                messageDropdown.classList.add('hidden');
+                notificationDropdown.classList.add('hidden');
+                chatbotWindow.classList.add('hidden'); // Also hide chatbot
+            }
+
+            // Toggle User Menu Dropdown
+            userMenuButton.addEventListener('click', function(event) {
+                event.stopPropagation(); // Prevent document click from closing immediately
+                hideAllPopups(); // Close other popups
+                userMenuDropdown.classList.toggle('hidden');
+                userMenuArrow.classList.toggle('active');
+            });
+
+            // Toggle Message Dropdown
+            messageButton.addEventListener('click', function(event) {
+                event.stopPropagation();
+                hideAllPopups();
+                messageDropdown.classList.toggle('hidden');
+            });
+
+            // Toggle Notification Dropdown
+            notificationButton.addEventListener('click', function(event) {
+                event.stopPropagation();
+                hideAllPopups();
+                notificationDropdown.classList.toggle('hidden');
+            });
+
+            // Toggle Chatbot Window
+            chatbotToggle.addEventListener('click', function(event) {
+                event.stopPropagation();
+                hideAllPopups(); // Close other popups
+                chatbotWindow.classList.toggle('hidden');
+            });
+
+            // Close Chatbot Window from its own close button
+            chatbotClose.addEventListener('click', function(event) {
+                event.stopPropagation();
+                chatbotWindow.classList.add('hidden');
+            });
+
+            // Close all popups when clicking outside
+            document.addEventListener('click', function(event) {
+                if (!userMenuButton.contains(event.target) && !userMenuDropdown.contains(event.target)) {
+                    userMenuDropdown.classList.add('hidden');
+                    userMenuArrow.classList.remove('active');
+                }
+                if (!messageButton.contains(event.target) && !messageDropdown.contains(event.target)) {
+                    messageDropdown.classList.add('hidden');
+                }
+                if (!notificationButton.contains(event.target) && !notificationDropdown.contains(event.target)) {
+                    notificationDropdown.classList.add('hidden');
+                }
+                if (!chatbotToggle.contains(event.target) && !chatbotWindow.contains(event.target)) {
+                    chatbotWindow.classList.add('hidden');
+                }
+            });
+
+            // Mobile Menu Toggle
+            menuButton.addEventListener('click', function() {
+                sidebar.classList.toggle('translate-x-full'); // Tailwind's `translate-x-full` moves it off-screen
+                sidebar.classList.toggle('translate-x-0'); // `translate-x-0` moves it into view
+                overlay.classList.toggle('hidden');
+            });
+
+            // Overlay click to close sidebar
+            overlay.addEventListener('click', function() {
+                sidebar.classList.add('translate-x-full');
+                sidebar.classList.remove('translate-x-0');
+                overlay.classList.add('hidden');
+            });
+
+            // Module Dropdown Toggles
+            moduleToggles.forEach(button => {
+                button.addEventListener('click', function() {
+                    const dropdownContent = this.nextElementSibling;
+                    const icon = this.querySelector('.rotate-icon');
+
+                    dropdownContent.classList.toggle('active');
+                    icon.classList.toggle('active');
+
+                    // Close other module dropdowns
+                    moduleToggles.forEach(otherButton => {
+                        if (otherButton !== button) {
+                            otherButton.nextElementSibling.classList.remove('active');
+                            otherButton.querySelector('.rotate-icon').classList.remove('active');
+                        }
+                    });
+                });
+            });
+
+            // NEW: Function to load content dynamically
+            async function loadContent(pageName) {
+                const url = pageMap[pageName];
+                if (!url) {
+                    console.error('Page not found in map:', pageName);
+                    mainContentContainer.innerHTML = '<div class="text-charcoal-dark p-6">Content not found for this page.</div>';
+                    return;
+                }
+
+                try {
+                    // Display a loading indicator (optional)
+                    mainContentContainer.innerHTML = '<div class="text-center p-8 text-charcoal-light">Loading content...</div>';
+
+                    const response = await fetch(url);
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    const content = await response.text();
+                    mainContentContainer.innerHTML = content;
+                } catch (error) {
+                    console.error('Error loading content:', error);
+                    mainContentContainer.innerHTML = `<div class="text-red-alert p-6">Failed to load content. Please try again. (${error.message})</div>`;
+                }
+            }
+
+            // Handle all data-page clicks
+            document.querySelectorAll('[data-page]').forEach(element => {
+                element.addEventListener('click', function(e) {
+                    e.preventDefault(); // Prevent default link/button behavior
+                    const page = this.dataset.page;
+                    loadContent(page); // Load content dynamically
+
+                    // Update active link styling in sidebar for main navigation items
+                    if (this.closest('nav')) { // Only apply to links within the sidebar nav
+                        mainNavLinks.forEach(navLink => {
+                            navLink.classList.remove('text-ocean-blue', 'font-semibold', 'bg-subtle-grey');
+                            navLink.classList.add('text-charcoal-dark', 'hover:bg-subtle-grey');
+                        });
+                        this.classList.add('text-ocean-blue', 'font-semibold', 'bg-subtle-grey');
+                        this.classList.remove('text-charcoal-dark', 'hover:bg-subtle-grey');
+                    }
+
+                    // If on mobile, close sidebar after navigation
+                    if (!menuButton.classList.contains('hidden')) { // Check if menu button is visible (i.e., on mobile)
+                        sidebar.classList.add('translate-x-full');
+                        sidebar.classList.remove('translate-x-0');
+                        overlay.classList.add('hidden');
+                    }
+                });
+            });
+
+            // Tab functionality for My Progress
+            function activateTab(tabId) {
+                tabButtons.forEach(button => {
+                    button.classList.remove('border-ocean-blue', 'text-ocean-blue');
+                    button.classList.add('border-transparent', 'text-charcoal-dark');
+                });
+                document.getElementById(tabId + '-tab').classList.add('border-ocean-blue', 'text-ocean-blue');
+                document.getElementById(tabId + '-tab').classList.remove('border-transparent', 'text-charcoal-dark');
+
+                tabContents.forEach(content => {
+                    content.classList.add('hidden');
+                });
+                document.getElementById(tabId + '-content').classList.remove('hidden');
+            }
+
+            overviewTab.addEventListener('click', () => activateTab('overview'));
+            modulesTab.addEventListener('click', () => activateTab('modules'));
+
+            // Initialize the default active page and tab (e.g., 'home' and 'overview' tab)
+            // Call loadContent for the initial page
+            loadContent('home'); // Load home-content.html by default
+            const initialPageLink = document.querySelector('a[data-page="home"]');
+            if (initialPageLink) {
+                initialPageLink.classList.add('text-ocean-blue', 'font-semibold', 'bg-subtle-grey');
+                initialPageLink.classList.remove('text-charcoal-dark', 'hover:bg-subtle-grey');
+            }
+            activateTab('overview'); // Set initial active tab
+        });
+    </script>
+</body>
+</html>

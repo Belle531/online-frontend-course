@@ -1,0 +1,1157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CMoore Front-End Fundamentals Dashboard</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts - Inter for general text, Montserrat for headings, Fira Code for code blocks -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Montserrat:wght@500;600;700&family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        /* Custom Tailwind Colors & Fonts Configuration */
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'ocean-blue': '#0E5B75',        /* Primary Accent: Deep Ocean Blue */
+                        'ocean-blue-dark': '#0A4A5D',   /* Darker shade for hover states */
+                        'sage-green': '#8DAA9D',        /* Secondary Accent: Soft Sage Green */
+                        'sage-green-dark': '#759185',   /* Darker shade for hover states */
+                        'off-white': '#F9F9F9',         /* Background: Very Light Grey / Off-White */
+                        'charcoal-dark': '#333333',     /* Text: Dark Charcoal Grey */
+                        'charcoal-light': '#555555',    /* Slightly lighter text for secondary info */
+                        'subtle-grey': '#E0E0E0',       /* Borders, Dividers, Disabled states */
+                        'code-block-bg': '#EEEEEE',     /* Background for code blocks */
+                        'goldenrod': '#EBA83A',         /* Highlight/Alert: Muted Goldenrod */
+                        'red-alert': '#EF4444',         /* Red for overdue assignments */
+                    },
+                    fontFamily: {
+                        inter: ['Inter', 'sans-serif'],
+                        montserrat: ['Montserrat', 'sans-serif'],
+                        firacode: ['Fira Code', 'monospace'],
+                    },
+                    boxShadow: {
+                        'custom': '0 4px 12px rgba(0, 0, 0, 0.05)', /* Subtle shadow for cards */
+                    }
+                }
+            }
+        }
+
+        /* Base styles for the body to ensure full height and font application */
+        body {
+            font-family: 'Inter', sans-serif; /* Default body font */
+            color: #333333; /* Default text color */
+            background-color: #F9F9F9; /* Default background color */
+            min-height: 100vh; /* Ensure body takes full viewport height */
+            display: flex; /* Use flexbox for main layout */
+            flex-direction: column; /* Stack header, main content vertically */
+        }
+
+        /* Custom scrollbar for better aesthetics (optional, but nice) */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #ccc;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #bbb;
+        }
+
+        /* Styles for the module dropdowns */
+        .module-dropdown-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+        }
+        .module-dropdown-content.active {
+            max-height: 500px; /* Adjust as needed for content height */
+            transition: max-height 0.5s ease-in;
+        }
+        .rotate-icon {
+            transition: transform 0.3s ease-in-out;
+        }
+        .rotate-icon.active {
+            transform: rotate(90deg);
+        }
+
+        /* --- FORCED DESKTOP LAYOUT FOR SIDEBAR AND MAIN CONTENT --- */
+        /* Ensure sidebar is always visible and in flow */
+        .sidebar {
+            transform: translateX(0) !important; /* Always show sidebar */
+            position: relative !important; /* Keep it in document flow */
+            height: 100%; /* Ensure it takes full height */
+            z-index: 10; /* Adjust z-index if needed, lower than header dropdowns */
+        }
+        /* Hide the mobile overlay */
+        .overlay {
+            display: none !important; /* Never show overlay */
+        }
+        /* Hide the mobile menu button */
+        #menu-button {
+            display: none !important; /* Never show hamburger menu */
+        }
+
+        /* Force main content area to always be a row layout */
+        .main-content-wrapper {
+            flex-direction: row !important; /* Always arrange children in a row */
+        }
+
+        /* Force modules overview panel to always take 1/3 width */
+        #modules-overview-panel {
+            width: 33.333333% !important; /* Always 1/3 width */
+            margin-right: 1.5rem !important; /* Consistent right margin */
+            margin-bottom: 0 !important; /* No bottom margin when in row */
+        }
+        /* --- END FORCED DESKTOP LAYOUT --- */
+
+
+        /* Custom Toggle Switch Styles */
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 44px; /* Wider for better touch target */
+            height: 24px; /* Taller */
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 24px; /* Half of height for full roundness */
+        }
+
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 18px; /* Slightly smaller than slider height */
+            width: 18px; /* Square for circle */
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .toggle-slider {
+            background-color: '#8DAA9D'; /* Sage Green */
+        }
+
+        input:focus + .toggle-slider {
+            box-shadow: 0 0 1px '#8DAA9D';
+        }
+
+        input:checked + .toggle-slider:before {
+            transform: translateX(20px); /* Move slider to the right */
+        }
+    </style>
+</head>
+<body class="font-inter">
+    <!-- Overlay for mobile sidebar -->
+    <div id="overlay" class="overlay"></div>
+
+    <!-- Header Section (Banner) -->
+    <header class="bg-white shadow-sm py-3 px-4 md:px-8 lg:px-12 flex items-center justify-between z-10 relative">
+        <!-- Left side: CMoore Logo and Mobile Menu Button (stacked) -->
+        <div class="flex flex-col items-start">
+            <!-- CMoore Logo (clickable) -->
+            <a href="#" class="flex items-center group" data-page="home">
+                <h1 class="text-xl md:text-2xl font-montserrat font-bold text-ocean-blue group-hover:text-ocean-blue-dark transition-colors duration-200">CMoore Fundamentals</h1>
+            </a>
+            <!-- Mobile Menu Button (moved under CMoore) -->
+            <button id="menu-button" class="md:hidden p-2 rounded-md hover:bg-subtle-grey mt-1">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-charcoal-dark" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+                </svg>
+            </button>
+        </div>
+
+        <!-- Right side: Message, Notification Bell and User Profile with Dropdown -->
+        <div class="flex items-center space-x-4">
+            <!-- Message Notification Bell -->
+            <div class="relative">
+                <button id="message-button" class="p-2 rounded-full hover:bg-subtle-grey transition-colors duration-200 relative">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-charcoal-dark" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                    </svg>
+                    <!-- Message Badge -->
+                    <span class="absolute top-1 right-1 block w-3 h-3 bg-ocean-blue rounded-full border-2 border-white"></span>
+                </button>
+                <!-- Message Dropdown -->
+                <div id="message-dropdown" class="absolute right-0 mt-2 w-80 bg-white rounded-lg shadow-lg py-2 border border-subtle-grey hidden z-40">
+                    <div class="flex items-center justify-between px-4 py-2 border-b border-subtle-grey">
+                        <h4 class="text-charcoal-dark font-semibold">Messages</h4>
+                        <div class="flex items-center space-x-2">
+                            <button class="p-1 rounded-full hover:bg-subtle-grey">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-charcoal-light" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                </svg>
+                            </button>
+                            <button class="bg-ocean-blue text-white text-sm px-3 py-1 rounded-md hover:bg-ocean-blue-dark">
+                                New Message
+                            </button>
+                        </div>
+                    </div>
+                    <div class="px-4 py-2 relative">
+                        <input type="text" placeholder="Search messages..." class="w-full p-2 pr-10 border border-subtle-grey rounded-lg text-charcoal-dark focus:outline-none focus:ring-1 focus:ring-ocean-blue">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-charcoal-light absolute right-6 top-1/2 -translate-y-1/2" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                    </div>
+                    <div class="max-h-60 overflow-y-auto">
+                        <!-- Starred Messages -->
+                        <div class="px-4 py-2 text-charcoal-light text-xs uppercase font-semibold border-b border-subtle-grey">Starred</div>
+                        <a href="#" class="flex items-center space-x-3 px-4 py-3 hover:bg-subtle-grey transition-colors duration-200 border-b border-subtle-grey">
+                            <img src="https://placehold.co/32x32/8DAA9D/FFFFFF?text=TA" alt="TA Profile" class="w-8 h-8 rounded-full object-cover">
+                            <div>
+                                <p class="text-charcoal-dark text-sm font-medium">TA Sarah (Module 3)</p>
+                                <p class="text-charcoal-light text-xs truncate">"Great question! Check out the docs on Flexbox..."</p>
+                            </div>
+                        </a>
+                        <!-- Student Messages -->
+                        <div class="px-4 py-2 text-charcoal-light text-xs uppercase font-semibold border-b border-subtle-grey">Students</div>
+                        <a href="#" class="flex items-center space-x-3 px-4 py-3 hover:bg-subtle-grey transition-colors duration-200 border-b border-subtle-grey">
+                            <img src="https://placehold.co/32x32/EBA83A/FFFFFF?text=AL" alt="Student Profile" class="w-8 h-8 rounded-full object-cover">
+                            <div>
+                                <p class="text-charcoal-dark text-sm font-medium">Alice L.</p>
+                                <p class="text-charcoal-light text-xs truncate">"Can you help me with the CSS assignment?"</p>
+                            </div>
+                        </a>
+                        <a href="#" class="flex items-center space-x-3 px-4 py-3 hover:bg-subtle-grey transition-colors duration-200 border-b border-subtle-grey">
+                            <img src="https://placehold.co/32x32/0E5B75/FFFFFF?text=MB" alt="Student Profile" class="w-8 h-8 rounded-full object-cover">
+                            <div>
+                                <p class="text-charcoal-dark text-sm font-medium">Mark B.</p>
+                                <p class="text-charcoal-light text-xs truncate">"Thanks for the tip on the new framework!"</p>
+                            </div>
+                        </a>
+                        <!-- Group Messages -->
+                        <div class="px-4 py-2 text-charcoal-light text-xs uppercase font-semibold border-b border-subtle-grey">Groups</div>
+                        <a href="#" class="flex items-center space-x-3 px-4 py-3 hover:bg-subtle-grey transition-colors duration-200 border-b border-subtle-grey">
+                            <div class="w-8 h-8 rounded-full bg-sage-green flex items-center justify-center text-white text-sm">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M17 20h2a2 2 0 002-2V8a2 2 0 00-2-2h-2M17 20v-2a2 2 0 00-2-2H9a2 2 0 00-2 2v2M17 20h-2M7 12v-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                                </svg>
+                            </div>
+                            <div>
+                                <p class="text-charcoal-dark text-sm font-medium">Project Alpha Team</p>
+                                <p class="text-charcoal-light text-xs truncate">"Meeting at 3 PM today to discuss progress."</p>
+                            </div>
+                        </a>
+                        <!-- Private Messages -->
+                        <div class="px-4 py-2 text-charcoal-light text-xs uppercase font-semibold border-b border-subtle-grey">Private</div>
+                        <a href="#" class="flex items-center space-x-3 px-4 py-3 hover:bg-subtle-grey transition-colors duration-200">
+                            <div class="w-8 h-8 rounded-full bg-goldenrod flex items-center justify-center text-white text-sm">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v3h8z" />
+                                </svg>
+                            </div>
+                            <div>
+                                <p class="text-charcoal-dark text-sm font-medium">Instructor (Feedback)</p>
+                                <p class="text-charcoal-light text-xs truncate">"Your Module 2 project feedback is ready."</p>
+                            </div>
+                        </a>
+                    </div>
+                    <a href="#" class="block text-center px-4 py-2 text-ocean-blue font-medium hover:bg-subtle-grey transition-colors duration-200 border-t border-subtle-grey">
+                        View All Messages
+                    </a>
+                </div>
+            </div>
+
+            <!-- Notification Bell -->
+            <div class="relative">
+                <button id="notification-button" class="p-2 rounded-full hover:bg-subtle-grey transition-colors duration-200 relative">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-charcoal-dark" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M15 17H8a2 2 0 01-2-2V5a2 2 0 012-2h2c.55 0 1 .45 1 1v1h2V4a2 2 0 012-2h2a2 2 0 012 2v12a2 2 0 01-2 2h-7z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M15 17v2a2 2 0 01-2 2H8a2 2 0 01-2-2v-2m9 0H6" />
+                    </svg>
+                    <!-- Notification Badge -->
+                    <span class="absolute top-1 right-1 block w-3 h-3 bg-red-alert rounded-full border-2 border-white"></span>
+                </button>
+                <!-- Notification Dropdown -->
+                <div id="notification-dropdown" class="absolute right-0 mt-2 w-72 bg-white rounded-lg shadow-lg py-2 border border-subtle-grey hidden z-40">
+                    <div class="px-4 py-2 text-charcoal-dark font-semibold border-b border-subtle-grey">Notifications</div>
+                    <div class="max-h-60 overflow-y-auto">
+                        <a href="#" class="block px-4 py-3 hover:bg-subtle-grey transition-colors duration-200 border-b border-subtle-grey last:border-b-0">
+                            <p class="text-charcoal-dark text-sm font-medium">Assignment: HTML Forms Due Soon</p>
+                            <p class="text-sage-green text-xs">Due in 2 days (July 18, 2025, 5:00 PM)</p>
+                        </a>
+                        <a href="#" class="block px-4 py-3 hover:bg-subtle-grey transition-colors duration-200 border-b border-subtle-grey last:border-b-0">
+                            <p class="text-charcoal-dark text-sm font-medium">Assignment: CSS Layouts Overdue</p>
+                            <p class="text-red-alert text-xs">Overdue by 5 days (July 11, 2025, 10:00 AM)</p>
+                        </a>
+                        <a href="#" class="block px-4 py-3 hover:bg-subtle-grey transition-colors duration-200 border-b border-subtle-grey last:border-b-0">
+                            <p class="text-charcoal-dark text-sm font-medium">New Forum Post: Module 3 Questions</p>
+                            <p class="text-charcoal-light text-xs">1 hour ago</p>
+                        </a>
+                        <a href="#" class="block px-4 py-3 hover:bg-subtle-grey transition-colors duration-200 border-b border-subtle-grey last:border-b-0">
+                            <p class="text-charcoal-dark text-sm font-medium">Google Meet Recording Available</p>
+                            <p class="text-charcoal-light text-xs">Live Session: July 15, 2025</p>
+                        </a>
+                    </div>
+                    <a href="#" class="block text-center px-4 py-2 text-ocean-blue font-medium hover:bg-subtle-grey transition-colors duration-200 border-t border-subtle-grey">
+                        View All Notifications
+                    </a>
+                </div>
+            </div>
+
+            <!-- User Profile with Dropdown -->
+            <div class="relative">
+                <button id="user-menu-button" class="flex items-center space-x-2 p-2 rounded-full hover:bg-subtle-grey transition-colors duration-200">
+                    <!-- User Picture Placeholder -->
+                    <img src="https://placehold.co/40x40/0E5B75/FFFFFF?text=JP" alt="User Profile" class="w-10 h-10 rounded-full border-2 border-ocean-blue object-cover">
+                    <span class="font-medium text-charcoal-dark hidden sm:block">John P.</span>
+                    <svg id="user-menu-arrow" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-charcoal-dark rotate-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+                    </svg>
+                </button>
+                <!-- Dropdown Menu -->
+                <div id="user-menu-dropdown" class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg py-2 border border-subtle-grey hidden z-40">
+                    <a href="#" class="block px-4 py-2 text-charcoal-dark hover:bg-subtle-grey transition-colors duration-200">Profile</a>
+                    <a href="#" class="block px-4 py-2 text-charcoal-dark hover:bg-subtle-grey transition-colors duration-200">Grades</a>
+                    <a href="#" class="block px-4 py-2 text-charcoal-dark hover:bg-subtle-grey transition-colors duration-200">Calendar</a>
+                    <a href="#" class="block px-4 py-2 text-charcoal-dark hover:bg-subtle-grey transition-colors duration-200">Messages</a>
+                    <a href="#" class="block px-4 py-2 text-charcoal-dark hover:bg-subtle-grey transition-colors duration-200">Private Files</a>
+                    <a href="#" class="block px-4 py-2 text-charcoal-dark hover:bg-subtle-grey transition-colors duration-200">Reports</a>
+                    <a href="#" class="block px-4 py-2 text-charcoal-dark hover:bg-subtle-grey transition-colors duration-200" id="notification-preferences-link">Preferences</a>
+                    <div class="relative group">
+                        <button class="w-full text-left px-4 py-2 text-charcoal-dark hover:bg-subtle-grey transition-colors duration-200 flex items-center justify-between">
+                            Language
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-charcoal-dark" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+                            </svg>
+                        </button>
+                        <div class="absolute left-full top-0 ml-1 w-32 bg-white rounded-lg shadow-lg py-1 border border-subtle-grey hidden group-hover:block">
+                            <a href="#" class="block px-4 py-2 text-charcoal-dark hover:bg-subtle-grey">English</a>
+                            <a href="#" class="block px-4 py-2 text-charcoal-dark hover:bg-subtle-grey">Español</a>
+                            <a href="#" class="block px-4 py-2 text-charcoal-dark hover:bg-subtle-grey">Français</a>
+                        </div>
+                    </div>
+                    <div class="border-t border-subtle-grey my-2"></div>
+                    <a href="#" class="block px-4 py-2 text-red-600 hover:bg-red-50 transition-colors duration-200">Logout</a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <div class="flex flex-1 main-content-wrapper p-6 lg:p-12 overflow-y-auto">
+        <!-- Side Navigation Bar (Main Nav + Module List) -->
+        <nav id="sidebar" class="sidebar w-64 bg-white shadow-md p-6 flex flex-col space-y-2 border-r border-subtle-grey">
+            <!-- Main Navigation Links (moved from header) -->
+            <a href="#" class="flex items-center space-x-3 p-3 rounded-lg text-charcoal-dark hover:bg-subtle-grey transition-colors duration-200" data-page="home">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m0 0l7 7m-14 0v10a1 1 0 001 1h3m-4 0a1 1 0 001 1h7a1 1 0 001-1M12 4v10" />
+                </svg>
+                <span class="font-medium">Home</span>
+            </a>
+            <a href="#" class="flex items-center space-x-3 p-3 rounded-lg text-charcoal-dark hover:bg-subtle-grey transition-colors duration-200" data-page="dashboard">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                </svg>
+                <span class="font-medium">Dashboard</span>
+            </a>
+            <a href="#" class="flex items-center space-x-3 p-3 rounded-lg text-ocean-blue font-semibold bg-subtle-grey transition-colors duration-200" data-page="my-courses">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                </svg>
+                <span class="font-medium">My Courses</span>
+            </a>
+
+            <div class="border-t border-subtle-grey my-4 pt-4"></div> <!-- Divider -->
+
+            <h3 class="text-lg font-montserrat font-semibold text-charcoal-dark mb-4">Course Modules</h3>
+
+            <!-- Module 1 -->
+            <div class="module-item">
+                <button class="module-toggle flex items-center justify-between w-full p-3 rounded-lg text-charcoal-dark hover:bg-subtle-grey transition-colors duration-200" data-module-id="1">
+                    <span class="font-medium">Module 1: Web Basics</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 rotate-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+                    </svg>
+                </button>
+                <div class="module-dropdown-content pl-6 pt-2 pb-1 space-y-1">
+                    <a href="#" class="block text-charcoal-light hover:text-ocean-blue text-sm py-1">Lesson 1.1: How the Web Works</a>
+                    <a href="#" class="block text-charcoal-light hover:text-ocean-blue text-sm py-1">Lesson 1.2: HTML Structure</a>
+                    <a href="#" class="block text-charcoal-light hover:text-ocean-blue text-sm py-1">Quiz: Web Basics</a>
+                </div>
+            </div>
+
+            <!-- Module 2 -->
+            <div class="module-item">
+                <button class="module-toggle flex items-center justify-between w-full p-3 rounded-lg text-charcoal-dark hover:bg-subtle-grey transition-colors duration-200" data-module-id="2">
+                    <span class="font-medium">Module 2: HTML Deep Dive</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 rotate-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+                    </svg>
+                </button>
+                <div class="module-dropdown-content pl-6 pt-2 pb-1 space-y-1">
+                    <a href="#" class="block text-charcoal-light hover:text-ocean-blue text-sm py-1">Lesson 2.1: Semantic HTML</a>
+                    <a href="#" class="block text-charcoal-light hover:text-ocean-blue text-sm py-1">Lesson 2.2: Forms & Inputs</a>
+                    <a href="#" class="block text-charcoal-light hover:text-ocean-blue text-sm py-1">Challenge: Build a Form</a>
+                </div>
+            </div>
+
+            <!-- Module 3 (Active) -->
+            <div class="module-item">
+                <button class="module-toggle flex items-center justify-between w-full p-3 rounded-lg text-charcoal-dark hover:bg-subtle-grey transition-colors duration-200" data-module-id="3">
+                    <span class="font-medium">Module 3: CSS Styling</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 rotate-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+                    </svg>
+                </button>
+                <div class="module-dropdown-content pl-6 pt-2 pb-1 space-y-1">
+                    <a href="#" class="block text-charcoal-light hover:text-ocean-blue text-sm py-1">Lesson 3.1: CSS Selectors (Current)</a>
+                    <a href="#" class="block text-charcoal-light hover:text-ocean-blue text-sm py-1">Lesson 3.2: Box Model</a>
+                    <a href="#" class="block text-charcoal-light hover:text-ocean-blue text-sm py-1">Project: Styled Portfolio</a>
+                </div>
+            </div>
+
+            <!-- Module 4 -->
+            <div class="module-item">
+                <button class="module-toggle flex items-center justify-between w-full p-3 rounded-lg text-charcoal-dark hover:bg-subtle-grey transition-colors duration-200" data-module-id="4">
+                    <span class="font-medium">Module 4: CSS Layouts</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 rotate-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+                    </svg>
+                </button>
+                <div class="module-dropdown-content pl-6 pt-2 pb-1 space-y-1">
+                    <a href="#" class="block text-charcoal-light hover:text-ocean-blue text-sm py-1">Lesson 4.1: Flexbox</a>
+                    <a href="#" class="block text-charcoal-light hover:text-ocean-blue text-sm py-1">Lesson 4.2: CSS Grid</a>
+                </div>
+            </div>
+
+            <!-- Module 5 -->
+            <div class="module-item">
+                <button class="module-toggle flex items-center justify-between w-full p-3 rounded-lg text-charcoal-dark hover:bg-subtle-grey transition-colors duration-200" data-module-id="5">
+                    <span class="font-medium">Module 5: Responsive Design</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 rotate-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+                    </svg>
+                </button>
+                <div class="module-dropdown-content pl-6 pt-2 pb-1 space-y-1">
+                    <a href="#" class="block text-charcoal-light hover:text-ocean-blue text-sm py-1">Lesson 5.1: Media Queries</a>
+                </div>
+            </div>
+
+            <!-- Module 6 -->
+            <div class="module-item">
+                <button class="module-toggle flex items-center justify-between w-full p-3 rounded-lg text-charcoal-dark hover:bg-subtle-grey transition-colors duration-200" data-module-id="6">
+                    <span class="font-medium">Module 6: Intro to JS</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 rotate-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+                    </svg>
+                </button>
+                <div class="module-dropdown-content pl-6 pt-2 pb-1 space-y-1">
+                    <a href="#" class="block text-charcoal-light hover:text-ocean-blue text-sm py-1">Lesson 6.1: Variables & Types</a>
+                    <a href="#" class="block text-charcoal-light hover:text-ocean-blue text-sm py-1">Lesson 6.2: Control Flow</a>
+                </div>
+            </div>
+
+            <!-- Module 7 -->
+            <div class="module-item">
+                <button class="module-toggle flex items-center justify-between w-full p-3 rounded-lg text-charcoal-dark hover:bg-subtle-grey transition-colors duration-200" data-module-id="7">
+                    <span class="font-medium">Module 7: DOM Manipulation</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 rotate-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+                    </svg>
+                </button>
+                <div class="module-dropdown-content pl-6 pt-2 pb-1 space-y-1">
+                    <a href="#" class="block text-charcoal-light hover:text-ocean-blue text-sm py-1">Lesson 7.1: Selecting Elements</a>
+                    <a href="#" class="block text-charcoal-light hover:text-ocean-blue text-sm py-1">Lesson 7.2: Events</a>
+                </div>
+            </div>
+
+            <!-- Module 8 -->
+            <div class="module-item">
+                <button class="module-toggle flex items-center justify-between w-full p-3 rounded-lg text-charcoal-dark hover:bg-subtle-grey transition-colors duration-200" data-module-id="8">
+                    <span class="font-medium">Module 8: Final Project</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 rotate-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+                    </svg>
+                </button>
+                <div class="module-dropdown-content pl-6 pt-2 pb-1 space-y-1">
+                    <a href="#" class="block text-charcoal-light hover:text-ocean-blue text-sm py-1">Project Overview</a>
+                    <a href="#" class="block text-charcoal-light hover:text-ocean-blue text-sm py-1">Submission Guidelines</a>
+                </div>
+            </div>
+
+        </nav>
+
+        <!-- Main Content Area -->
+        <div class="flex-1 flex p-6 lg:p-12 overflow-y-auto">
+            <!-- Left Column: Modules Overview Panel (Always visible when My Courses is active) -->
+            <div id="modules-overview-panel" class="w-1/3 bg-white rounded-xl shadow-custom border border-subtle-grey p-6 mr-6 flex-shrink-0 hidden">
+                <h3 class="text-xl font-montserrat font-bold text-charcoal-dark mb-4">All Modules</h3>
+                <div id="modules-overview-grid-persistent" class="grid grid-cols-1 gap-4">
+                    <!-- Module cards will be populated here by JavaScript -->
+                </div>
+            </div>
+
+            <!-- Right Column: Dynamic Content (main content area) -->
+            <main class="flex-1">
+                <!-- Initial Dashboard Sections -->
+                <section id="dashboard-summary-section" class="bg-white rounded-xl shadow-custom border border-subtle-grey p-6 hidden">
+                    <!-- Main Welcome Header (Moved inside this section) -->
+                    <h2 class="text-3xl font-montserrat font-bold text-charcoal-dark mb-6">Welcome to CMoore Front-End-Development Fundamentals Online Course</h2>
+                    <h3 class="text-xl font-montserrat font-bold text-charcoal-dark mb-4">Your Overall Progress</h3>
+                    <div class="flex items-center space-x-4">
+                        <div class="w-full bg-subtle-grey rounded-full h-3">
+                            <div class="bg-sage-green h-3 rounded-full" style="width: 45%;"></div>
+                        </div>
+                        <span class="text-charcoal-dark font-semibold">45% Complete</span>
+                    </div>
+                    <h3 class="text-xl font-montserrat font-semibold text-charcoal-dark mt-8 mb-4">Quick Recap</h3>
+                    <ul class="list-disc list-inside text-charcoal-dark space-y-2">
+                        <li class="flex items-start">
+                            <span class="mr-2 text-sage-green font-bold">&bull;</span>
+                            <p><strong>Module 1: Web Basics</strong> - Understood how the internet works, browsers, and basic HTML structure.</p>
+                        </li>
+                        <li class="flex items-start">
+                            <span class="mr-2 text-sage-green font-bold">&bull;</span>
+                            <p><strong>Module 2: HTML Deep Dive</strong> - Mastered semantic HTML5 elements for robust web page structures.</p>
+                        </li>
+                        <li class="flex items-start">
+                            <span class="mr-2 text-goldenrod font-bold">&bull;</span>
+                            <p><strong>Module 3: CSS Styling</strong> - Currently learning CSS properties, selectors, and the box model.</p>
+                        </li>
+                        <li class="flex items-start">
+                            <span class="mr-2 text-subtle-grey font-bold">&bull;</span>
+                            <p><strong>Upcoming: Module 4: CSS Layouts</strong> - Next, you'll dive into Flexbox and Grid!</p>
+                        </li>
+                    </ul>
+                    <button class="mt-6 bg-subtle-grey text-charcoal-dark font-semibold py-2 px-6 rounded-lg
+                                   hover:bg-subtle-grey-dark transition-colors duration-200">
+                        Review All Completed Lessons
+                    </button>
+                </section>
+
+                <!-- Module Detail Display (for individual modules) -->
+                <section id="module-detail-display" class="bg-white rounded-xl shadow-custom border border-subtle-grey p-6">
+                    <!-- Individual module details loaded here dynamically, or a default message -->
+                    <!-- This will be populated by loadModuleContent(3) on initial load -->
+                </section>
+
+                <!-- Notification Preferences Page -->
+                <section id="notification-preferences-page" class="bg-white rounded-xl shadow-custom border border-subtle-grey p-6 hidden">
+                    <h2 class="text-3xl font-montserrat font-bold text-charcoal-dark mb-6">Notification Preferences</h2>
+
+                    <!-- Disable All Notifications -->
+                    <div class="flex items-center justify-between mb-8 pb-4 border-b border-subtle-grey">
+                        <h3 class="text-xl font-montserrat font-semibold text-charcoal-dark">Disable All Notifications</h3>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="disable-all-notifications">
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+
+                    <!-- Notification Settings Table -->
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left table-auto">
+                            <thead>
+                                <tr class="bg-subtle-grey text-charcoal-dark font-semibold text-sm uppercase">
+                                    <th class="py-3 px-4 rounded-tl-lg">Notification Type</th>
+                                    <th class="py-3 px-4 text-center">Web</th>
+                                    <th class="py-3 px-4 text-center">Email</th>
+                                    <th class="py-3 px-4 text-center rounded-tr-lg">Mobile</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Assignment Notifications -->
+                                <tr class="border-b border-subtle-grey">
+                                    <td class="py-4 px-4 font-medium text-charcoal-dark">Assignment Notifications</td>
+                                    <td class="py-4 px-4 text-center">
+                                        <label class="toggle-switch">
+                                            <input type="checkbox" checked>
+                                            <span class="toggle-slider"></span>
+                                        </label>
+                                    </td>
+                                    <td class="py-4 px-4 text-center">
+                                        <label class="toggle-switch">
+                                            <input type="checkbox" checked>
+                                            <span class="toggle-slider"></span>
+                                        </label>
+                                    </td>
+                                    <td class="py-4 px-4 text-center">
+                                        <label class="toggle-switch">
+                                            <input type="checkbox" checked>
+                                            <span class="toggle-slider"></span>
+                                        </label>
+                                    </td>
+                                </tr>
+                                <tr class="border-b border-subtle-grey">
+                                    <td class="py-3 px-4 text-charcoal-light pl-8">Assignment Due Soon Notification</td>
+                                    <td class="py-3 px-4 text-center">
+                                        <label class="toggle-switch">
+                                            <input type="checkbox" checked>
+                                            <span class="toggle-slider"></span>
+                                        </label>
+                                    </td>
+                                    <td class="py-3 px-4 text-center">
+                                        <label class="toggle-switch">
+                                            <input type="checkbox" checked>
+                                            <span class="toggle-slider"></span>
+                                        </label>
+                                    </td>
+                                    <td class="py-3 px-4 text-center">
+                                        <label class="toggle-switch">
+                                            <input type="checkbox" checked>
+                                            <span class="toggle-slider"></span>
+                                        </label>
+                                    </td>
+                                </tr>
+                                <tr class="border-b border-subtle-grey">
+                                    <td class="py-3 px-4 text-charcoal-light pl-8">Assignment Overdue Notification</td>
+                                    <td class="py-3 px-4 text-center">
+                                        <label class="toggle-switch">
+                                            <input type="checkbox" checked>
+                                            <span class="toggle-slider"></span>
+                                        </label>
+                                    </td>
+                                    <td class="py-3 px-4 text-center">
+                                        <label class="toggle-switch">
+                                            <input type="checkbox" checked>
+                                            <span class="toggle-slider"></span>
+                                    </label>
+                                    </td>
+                                    <td class="py-3 px-4 text-center">
+                                        <label class="toggle-switch">
+                                            <input type="checkbox" checked>
+                                            <span class="toggle-slider"></span>
+                                        </label>
+                                    </td>
+                                </tr>
+                                <tr class="border-b border-subtle-grey">
+                                    <td class="py-3 px-4 text-charcoal-light pl-8">Assignment Due in 7 Days Notification</td>
+                                    <td class="py-3 px-4 text-center">
+                                        <label class="toggle-switch">
+                                            <input type="checkbox" checked>
+                                            <span class="toggle-slider"></span>
+                                        </label>
+                                    </td>
+                                    <td class="py-3 px-4 text-center">
+                                        <label class="toggle-switch">
+                                            <input type="checkbox" checked>
+                                            <span class="toggle-slider"></span>
+                                        </label>
+                                    </td>
+                                    <td class="py-3 px-4 text-center">
+                                        <label class="toggle-switch">
+                                            <input type="checkbox" checked>
+                                            <span class="toggle-slider"></span>
+                                        </label>
+                                    </td>
+                                </tr>
+
+                                <!-- Google Meet Information -->
+                                <tr class="border-b border-subtle-grey">
+                                    <td class="py-4 px-4 font-medium text-charcoal-dark">Google Meet Information (Recording Available)</td>
+                                    <td class="py-4 px-4 text-center">
+                                        <label class="toggle-switch">
+                                            <input type="checkbox" checked>
+                                            <span class="toggle-slider"></span>
+                                        </label>
+                                    </td>
+                                    <td class="py-4 px-4 text-center">
+                                        <label class="toggle-switch">
+                                            <input type="checkbox" checked>
+                                            <span class="toggle-slider"></span>
+                                        </label>
+                                    </td>
+                                    <td class="py-4 px-4 text-center">
+                                        <label class="toggle-switch">
+                                            <input type="checkbox" checked>
+                                            <span class="toggle-slider"></span>
+                                        </label>
+                                    </td>
+                                </tr>
+
+                                <!-- Student Feedback -->
+                                <tr class="border-b border-subtle-grey">
+                                    <td class="py-4 px-4 font-medium text-charcoal-dark">Student Feedback Notifications</td>
+                                    <td class="py-4 px-4 text-center">
+                                        <label class="toggle-switch">
+                                            <input type="checkbox" checked>
+                                            <span class="toggle-slider"></span>
+                                        </label>
+                                    </td>
+                                    <td class="py-4 px-4 text-center">
+                                        <label class="toggle-switch">
+                                            <input type="checkbox" checked>
+                                            <span class="toggle-slider"></span>
+                                        </label>
+                                    </td>
+                                    <td class="py-4 px-4 text-center">
+                                        <label class="toggle-switch">
+                                            <input type="checkbox" checked>
+                                            <span class="toggle-slider"></span>
+                                        </label>
+                                    </td>
+                                </tr>
+
+                                <!-- Forum Subscribed Post -->
+                                <tr class="border-b border-subtle-grey">
+                                    <td class="py-4 px-4 font-medium text-charcoal-dark">Subscribed Forum Post Notifications</td>
+                                    <td class="py-4 px-4 text-center">
+                                        <label class="toggle-switch">
+                                            <input type="checkbox" checked>
+                                            <span class="toggle-slider"></span>
+                                        </label>
+                                    </td>
+                                    <td class="py-4 px-4 text-center">
+                                        <label class="toggle-switch">
+                                            <input type="checkbox" checked>
+                                            <span class="toggle-slider"></span>
+                                        </label>
+                                    </td>
+                                    <td class="py-4 px-4 text-center">
+                                        <label class="toggle-switch">
+                                            <input type="checkbox" checked>
+                                            <span class="toggle-slider"></span>
+                                        </label>
+                                    </td>
+                                </tr>
+
+                                <!-- Lesson Section -->
+                                <tr class="border-b border-subtle-grey">
+                                    <td class="py-4 px-4 font-medium text-charcoal-dark">Lesson Section Notifications</td>
+                                    <td class="py-4 px-4 text-center">
+                                        <label class="toggle-switch">
+                                            <input type="checkbox" checked>
+                                            <span class="toggle-slider"></span>
+                                        </label>
+                                    </td>
+                                    <td class="py-4 px-4 text-center">
+                                        <label class="toggle-switch">
+                                            <input type="checkbox" checked>
+                                            <span class="toggle-slider"></span>
+                                        </label>
+                                    </td>
+                                    <td class="py-4 px-4 text-center">
+                                        <label class="toggle-switch">
+                                            <input type="checkbox" checked>
+                                            <span class="toggle-slider"></span>
+                                        </label>
+                                    </td>
+                                </tr>
+
+                                <!-- System Information -->
+                                <tr>
+                                    <td class="py-4 px-4 font-medium text-charcoal-dark">System Information Notifications</td>
+                                    <td class="py-4 px-4 text-center">
+                                        <label class="toggle-switch">
+                                            <input type="checkbox" checked>
+                                            <span class="toggle-slider"></span>
+                                        </label>
+                                    </td>
+                                    <td class="py-4 px-4 text-center">
+                                        <label class="toggle-switch">
+                                            <input type="checkbox" checked>
+                                            <span class="toggle-slider"></span>
+                                        </label>
+                                    </td>
+                                    <td class="py-4 px-4 text-center">
+                                        <label class="toggle-switch">
+                                            <input type="checkbox" checked>
+                                            <span class="toggle-slider"></span>
+                                        </label>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Email and Mobile Information Inputs -->
+                    <div class="mt-8 grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <h4 class="text-xl font-montserrat font-semibold text-charcoal-dark mb-3">Email Information</h4>
+                            <input type="email" placeholder="Add Email Address" class="w-full p-3 border border-subtle-grey rounded-lg focus:outline-none focus:ring-2 focus:ring-ocean-blue focus:border-transparent text-charcoal-dark">
+                            <p class="text-charcoal-light text-sm mt-2">Notifications will be sent to this email address.</p>
+                        </div>
+                        <div>
+                            <h4 class="text-xl font-montserrat font-semibold text-charcoal-dark mb-3">Mobile Information</h4>
+                            <input type="tel" placeholder="Add Mobile Number" class="w-full p-3 border border-subtle-grey rounded-lg focus:outline-none focus:ring-2 focus:ring-ocean-blue focus:border-transparent text-charcoal-dark">
+                            <p class="text-charcoal-light text-sm mt-2">Notifications will be sent to this mobile number via SMS.</p>
+                        </div>
+                    </div>
+
+                    <div class="mt-8 flex justify-end">
+                        <button class="bg-ocean-blue text-white font-semibold py-3 px-8 rounded-lg shadow-md
+                                       hover:bg-ocean-blue-dark transition-colors duration-200 text-lg">
+                            Save Preferences
+                        </button>
+                    </div>
+                </section>
+            </main>
+        </div>
+    </div>
+
+    <script>
+        // Data for modules
+        const moduleData = {
+            1: {
+                title: "Module 1: Web Basics",
+                description: "Welcome to Module 1! Here, you'll learn the fundamentals of how the web works, browser functions, and basic HTML structure.",
+                lesson: "Lesson 1.1: How the Web Works",
+                code: `/* Example for Module 1 */
+<!DOCTYPE html>
+<html>
+<head>
+    <title>My First Web Page</title>
+</head>
+<body>
+    <h1>Hello World!</h1>
+    <p>This is a basic HTML page.</p>
+</body>
+</html>`
+            },
+            2: {
+                title: "Module 2: HTML Deep Dive",
+                description: "Dive deep into HTML5, mastering semantic elements, forms, and input types for robust web structures.",
+                lesson: "Lesson 2.1: Semantic HTML",
+                code: `<!-- Example for Module 2 -->
+<header>
+    <h1>Website Title</h1>
+</header>
+<nav>
+    <ul>
+        <li><a href="#">Home</a></li>
+        <li><a href="#">About</a></li>
+    </ul>
+</nav>
+<main>
+    <article>
+        <h2>Article Title</h2>
+        <p>Article content goes here.</p>
+    </article>
+</main>`
+            },
+            3: {
+                title: "Module 3: CSS Styling",
+                description: "Welcome to Module 3! Here, you'll learn the fundamentals of styling web pages using CSS. We'll cover everything from basic properties to advanced selectors and the crucial box model.",
+                lesson: "Lesson 3.1: CSS Selectors (Current)",
+                code: `/* Example CSS Selectors */
+body {
+    font-family: 'Inter', sans-serif;
+}
+
+.container {
+    max-width: 960px;
+    margin: 0 auto;
+}
+
+#header {
+    background-color: #0E5B75;
+    color: white;
+}
+
+p {
+    line-height: 1.6;
+}`
+            },
+            4: {
+                title: "Module 4: CSS Layouts",
+                description: "Explore modern layout techniques with Flexbox and CSS Grid for building responsive and complex web page structures.",
+                lesson: "Lesson 4.1: Flexbox",
+                code: `/* Example for Module 4 (Flexbox) */
+.flex-container {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+}`
+            },
+            5: {
+                title: "Module 5: Responsive Design",
+                description: "Learn to adapt your websites to look great on any device, from mobile phones to large desktop screens, using media queries and fluid layouts.",
+                lesson: "Lesson 5.1: Media Queries",
+                code: `/* Example for Module 5 (Media Queries) */
+@media (max-width: 768px) {
+    .container {
+        padding: 10px;
+    }
+}`
+            },
+            6: {
+                title: "Module 6: Intro to JS",
+                description: "Start your journey with JavaScript, the language of the web. Learn about variables, data types, operators, and basic control flow.",
+                lesson: "Lesson 6.1: Variables & Types",
+                code: `// Example for Module 6 (JavaScript)
+let message = "Hello, JavaScript!";
+const year = 2025;
+console.log(message + " " + year);`
+            },
+            7: {
+                title: "Module 7: DOM Manipulation",
+                description: "Make your web pages interactive by dynamically changing HTML content, CSS styles, and responding to user actions using JavaScript's Document Object Model (DOM).",
+                lesson: "Lesson 7.1: Selecting Elements",
+                code: `// Example for Module 7 (DOM)
+const myElement = document.getElementById('myId');
+if (myElement) {
+    myElement.textContent = "Content Updated!";
+    myElement.style.color = "blue";
+}`
+            },
+            8: {
+                title: "Module 8: Final Project",
+                description: "Apply all your learned front-end skills to build a complete, responsive, and interactive web project from scratch.",
+                lesson: "Project Overview",
+                code: `/* Example for Module 8 (Final Project Idea) */
+// Build a simple e-commerce product page with dynamic content,
+// image gallery, and add-to-cart functionality.`
+            }
+        };
+
+        // Function to show a specific page and hide others within the main dynamic content area
+        function showDynamicContent(pageId) {
+            const dynamicSections = ['module-detail-display', 'notification-preferences-page', 'dashboard-summary-section'];
+            dynamicSections.forEach(id => {
+                const sectionElement = document.getElementById(id);
+                if (sectionElement) {
+                    if (id === pageId) {
+                        sectionElement.classList.remove('hidden');
+                    } else {
+                        sectionElement.classList.add('hidden');
+                    }
+                }
+            });
+        }
+
+        // Function to load and display individual module content
+        function loadModuleContent(moduleId) {
+            const data = moduleData[moduleId];
+            if (!data) return; // Exit if module ID is invalid
+
+            document.getElementById('module-detail-display').innerHTML = `
+                <div id="selected-module-details">
+                    <h3 class="text-2xl font-montserrat font-bold text-charcoal-dark mb-4">${data.title}</h3>
+                    <p class="text-charcoal-light mb-6 leading-relaxed">
+                        ${data.description}
+                    </p>
+                    <div class="space-y-4">
+                        <h4 class="text-xl font-montserrat font-semibold text-charcoal-dark">Current Lesson: ${data.lesson}</h4>
+                        <p class="text-charcoal-light">
+                            Dive deep into the core concepts of this module.
+                        </p>
+                        <div class="bg-code-block-bg p-4 rounded-lg font-firacode text-charcoal-dark text-sm overflow-x-auto">
+                            <pre><code>${data.code}</code></pre>
+                        </div>
+                        <button class="bg-ocean-blue text-white font-semibold py-2 px-6 rounded-lg shadow-md
+                                       hover:bg-ocean-blue-dark transition-colors duration-200">
+                            Go to Lesson ${moduleId}.1
+                        </button>
+                    </div>
+                    <div class="border-t border-subtle-grey pt-6 mt-6">
+                        <h4 class="text-xl font-montserrat font-semibold text-charcoal-dark mb-4">Module Progress</h4>
+                        <div class="flex items-center space-x-4">
+                            <div class="w-full bg-subtle-grey rounded-full h-3">
+                                <div class="bg-sage-green h-3 rounded-full" style="width: ${Math.floor(Math.random() * 100)}%;"></div>
+                            </div>
+                            <span class="text-charcoal-dark font-semibold">${Math.floor(Math.random() * 100)}% Complete</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+            showDynamicContent('module-detail-display'); // Show the individual module details
+        }
+
+        // Function to load and display the Modules Overview grid
+        function loadModulesOverview() {
+            const modulesOverviewGrid = document.getElementById('modules-overview-grid-persistent');
+            modulesOverviewGrid.innerHTML = ''; // Clear previous content
+
+            for (let i = 1; i <= 8; i++) {
+                const data = moduleData[i];
+                if (data) {
+                    const moduleCard = document.createElement('div');
+                    moduleCard.className = 'bg-off-white p-4 rounded-lg border border-subtle-grey flex flex-col justify-between';
+                    moduleCard.innerHTML = `
+                        <div>
+                            <h3 class="text-xl font-montserrat font-semibold text-ocean-blue mb-2">${data.title}</h3>
+                            <p class="text-charcoal-light text-sm mb-4">${data.description}</p>
+                        </div>
+                        <button class="view-module-btn bg-sage-green text-white font-semibold py-2 px-4 rounded-lg hover:bg-sage-green-dark transition-colors duration-200" data-module-id="${i}">View Module</button>
+                    `;
+                    modulesOverviewGrid.appendChild(moduleCard);
+                }
+            }
+
+            document.querySelectorAll('.view-module-btn').forEach(button => {
+                button.addEventListener('click', (event) => {
+                    const moduleId = event.target.dataset.moduleId;
+                    loadModuleContent(moduleId);
+                });
+            });
+
+            document.getElementById('modules-overview-panel').classList.remove('hidden'); // Show the modules overview panel
+            document.getElementById('module-detail-display').innerHTML = `
+                <div class="text-center py-12 text-charcoal-light">
+                    <p class="text-lg">Select a module from the left panel or the sidebar to view its details.</p>
+                </div>
+            `;
+            showDynamicContent('module-detail-display');
+        }
+
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const userMenuButton = document.getElementById('user-menu-button');
+            const userMenuDropdown = document.getElementById('user-menu-dropdown');
+            const userMenuArrow = document.getElementById('user-menu-arrow');
+            const notificationButton = document.getElementById('notification-button');
+            const notificationDropdown = document.getElementById('notification-dropdown');
+            const messageButton = document.getElementById('message-button');
+            const messageDropdown = document.getElementById('message-dropdown');
+            const notificationPreferencesLink = document.getElementById('notification-preferences-link');
+            const cMooreLogoLink = document.querySelector('a[data-page="home"]'); // Get the CMoore logo link
+            const modulesOverviewPanel = document.getElementById('modules-overview-panel');
+
+
+            // Function to close all dropdowns
+            function closeAllDropdowns() {
+                userMenuDropdown.classList.add('hidden');
+                userMenuArrow.classList.remove('active');
+                notificationDropdown.classList.add('hidden');
+                messageDropdown.classList.add('hidden');
+            }
+
+            // Toggle user profile dropdown
+            userMenuButton.addEventListener('click', (event) => {
+                event.stopPropagation(); // Prevent click from closing immediately
+                closeAllDropdowns(); // Close others
+                const isOpen = userMenuDropdown.classList.toggle('hidden');
+                userMenuArrow.classList.toggle('active', !isOpen); // Rotate arrow when open
+            });
+
+            // Toggle notification dropdown
+            notificationButton.addEventListener('click', (event) => {
+                event.stopPropagation(); // Prevent click from closing immediately
+                closeAllDropdowns(); // Close others
+                notificationDropdown.classList.toggle('hidden');
+            });
+
+            // Toggle message dropdown
+            messageButton.addEventListener('click', (event) => {
+                event.stopPropagation(); // Prevent click from closing immediately
+                closeAllDropdowns(); // Close others
+                messageDropdown.classList.toggle('hidden');
+            });
+
+            // Close all dropdowns when clicking outside
+            document.addEventListener('click', (event) => {
+                // Check if the click target or its parent is not any of the dropdown buttons or dropdown content
+                const isClickInsideDropdownOrButton = event.target.closest('#user-menu-button, #user-menu-dropdown, #notification-button, #notification-dropdown, #message-button, #message-dropdown');
+                if (!isClickInsideDropdownOrButton) {
+                    closeAllDropdowns();
+                }
+            });
+
+            // Module dropdowns in side nav
+            const moduleToggles = document.querySelectorAll('.module-toggle');
+            moduleToggles.forEach(toggle => {
+                toggle.addEventListener('click', (event) => {
+                    const dropdownContent = toggle.nextElementSibling;
+                    const arrowIcon = toggle.querySelector('.rotate-icon');
+                    const moduleId = event.currentTarget.dataset.moduleId; // Get module ID from the button
+
+                    // Close other open dropdowns
+                    document.querySelectorAll('.module-dropdown-content.active').forEach(openDropdown => {
+                        if (openDropdown !== dropdownContent) {
+                            openDropdown.classList.remove('active');
+                            openDropdown.previousElementSibling.querySelector('.rotate-icon').classList.remove('active');
+                            openDropdown.previousElementSibling.classList.remove('bg-ocean-blue', 'text-white', 'font-semibold', 'shadow-sm');
+                            openDropdown.previousElementSibling.classList.add('text-charcoal-dark', 'hover:bg-subtle-grey');
+                        }
+                    });
+
+                    // Toggle current dropdown
+                    dropdownContent.classList.toggle('active');
+                    arrowIcon.classList.toggle('active');
+
+                    // Toggle active state for module button
+                    toggle.classList.toggle('bg-ocean-blue');
+                    toggle.classList.toggle('text-white');
+                    toggle.classList.toggle('font-semibold');
+                    toggle.classList.toggle('shadow-sm');
+                    toggle.classList.toggle('text-charcoal-dark');
+                    toggle.classList.toggle('hover:bg-subtle-grey');
+
+                    // Load specific module content and hide modules overview panel
+                    loadModuleContent(moduleId);
+                    modulesOverviewPanel.classList.add('hidden'); // Hide modules overview when a specific module is selected from sidebar
+                });
+            });
+
+            // Handle navigation links in sidebar (Home, Dashboard, My Courses)
+            document.querySelectorAll('#sidebar > a[data-page]').forEach(link => {
+                link.addEventListener('click', (event) => {
+                    event.preventDefault();
+                    const pageId = event.target.dataset.page;
+
+                    // Update active state for sidebar links
+                    document.querySelectorAll('#sidebar > a').forEach(l => {
+                        l.classList.remove('text-ocean-blue', 'font-semibold', 'bg-subtle-grey');
+                        l.classList.add('text-charcoal-dark', 'hover:bg-subtle-grey');
+                    });
+                    // Set active state for clicked sidebar link
+                    event.target.classList.add('text-ocean-blue', 'font-semibold', 'bg-subtle-grey');
+                    event.target.classList.remove('text-charcoal-dark', 'hover:bg-subtle-grey');
+
+                    if (pageId === 'dashboard' || pageId === 'home') {
+                        showDynamicContent('dashboard-summary-section');
+                        modulesOverviewPanel.classList.add('hidden'); // Hide modules overview panel
+                    } else if (pageId === 'my-courses') {
+                        loadModulesOverview(); // Load the modules overview when "My Courses" is clicked
+                        modulesOverviewPanel.classList.remove('hidden'); // Ensure modules overview panel is visible
+                    }
+                });
+            });
+
+            // Handle CMoore logo click
+            cMooreLogoLink.addEventListener('click', (event) => {
+                event.preventDefault();
+                showDynamicContent('dashboard-summary-section'); // Show the dashboard summary for home
+                modulesOverviewPanel.classList.add('hidden'); // Hide modules overview panel
+                // Reset sidebar active state and set 'Home' as active
+                document.querySelectorAll('#sidebar > a').forEach(l => {
+                    l.classList.remove('text-ocean-blue', 'font-semibold', 'bg-subtle-grey');
+                    l.classList.add('text-charcoal-dark', 'hover:bg-subtle-grey');
+                });
+                document.querySelector('#sidebar a[data-page="home"]').classList.add('text-ocean-blue', 'font-semibold', 'bg-subtle-grey');
+                document.querySelector('#sidebar a[data-page="home"]').classList.remove('text-charcoal-dark', 'hover:bg-subtle-grey');
+            });
+
+
+            // Link from user dropdown to Notification Preferences page
+            notificationPreferencesLink.addEventListener('click', (event) => {
+                event.preventDefault();
+                closeAllDropdowns(); // Close all dropdowns
+                showDynamicContent('notification-preferences-page'); // Show the preferences page
+                modulesOverviewPanel.classList.add('hidden'); // Hide modules overview panel
+            });
+
+            // Initialize the default view (Dashboard Summary)
+            showDynamicContent('dashboard-summary-section');
+            modulesOverviewPanel.classList.add('hidden');
+            // Set "Home" as active in the sidebar on initial load
+            document.querySelector('#sidebar a[data-page="home"]').classList.add('text-ocean-blue', 'font-semibold', 'bg-subtle-grey');
+            document.querySelector('#sidebar a[data-page="home"]').classList.remove('text-charcoal-dark', 'hover:bg-subtle-grey');
+        });
+    </script>
+</body>
+</html>
