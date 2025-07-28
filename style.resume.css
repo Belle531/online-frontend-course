@@ -1,32 +1,86 @@
-/* Root Color Variables */
-:root {
-  --bg-color: #FFFFFF;
-  --text-color: #111111;
-  --secondary-text: #333333;
-  --accent-color: #1E3A8A; /* Cobalt option */
-  --hover-accent: #2563EB; /* Bright blue on hover */
-  --button-bg: #14B8A6; /* Teal call-to-action */
-  --button-text: #FFFFFF;
-  --card-shadow: rgba(0, 0, 0, 0.1);
-}
+<style>
+    :root {
+      --bg-color: #FFFFFF;
+      --text-color: #111111;
+      --secondary-text: #333333;
+      --accent-color: #1E3A8A;
+      --hover-accent: #2563EB;
+      --button-bg: #14B8A6;
+      --button-text: #FFFFFF;
+      --card-shadow: rgba(0, 0, 0, 0.1);
+    }
 
-/* General Body Styles */
-body {
-  font-family: 'Inter', sans-serif;
-  color: var(--stormy-blue);
-  background-color: var(--blush-50);
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-}
+    body {
+      margin: 0;
+      font-family: 'Inter', sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      line-height: 1.6;
+    }
 
-/* Custom Scrollbar */
-::-webkit-scrollbar {
-  width: 8px;
-}
-::-webkit-scrollbar-track {
-  background: #f1f1f1;
-  border-radius: 10px;
-}
-::-webkit-scrollbar-thumb {
-  background;
+    header {
+      background-color: var(--accent-color);
+      color: var(--button-text);
+      padding: 1rem 2rem;
+      text-align: center;
+    }
+
+    h1 {
+      font-size: 2rem;
+      margin: 0;
+    }
+
+    .button {
+      background-color: var(--button-bg);
+      color: var(--button-text);
+      border: none;
+      padding: 0.75rem 1.5rem;
+      margin: 1rem;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: background-color 0.3s ease;
+    }
+
+    .button:hover {
+      background-color: var(--hover-accent);
+    }
+
+    .card {
+      background-color: var(--bg-color);
+      box-shadow: 0 4px 12px var(--card-shadow);
+      border-radius: 10px;
+      padding: 1rem;
+      margin: 1rem;
+      width: 300px;
+      transition: transform 0.3s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-5px);
+    }
+
+    .card img {
+      width: 100%;
+      border-radius: 8px;
+      margin-bottom: 0.5rem;
+    }
+
+    .card h2 {
+      color: var(--accent-color);
+      font-size: 1.2rem;
+      margin: 0.5rem 0;
+    }
+
+    .card p {
+      color: var(--secondary-text);
+      font-size: 0.95rem;
+    }
+
+    .card-container {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+  </style>
+
