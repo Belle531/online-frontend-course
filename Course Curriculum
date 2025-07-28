@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    
+</body>
+</html>
+<!-- Section: Course Curriculum / Modules Breakdown -->
+        <section class="max-w-6xl mx-auto px-4 py-12 mb-10 w-full">
+            <h2 class="text-3xl font-montserrat font-bold text-ocean-blue text-center mb-10">Course Curriculum</h2>
+            <div class="space-y-6">
+                <!-- Module 1 -->
+                <div class="bg-white rounded-lg shadow-md p-6 border border-subtle-grey">
+                    <h3 class="text-xl font-semibold text-ocean-blue mb-2 flex items-center gap-3"><span class="text-sage-green text-2xl">1.</span> Getting Started: Web Foundations</h3>
+                    <p class="text-charcoal-light mb-3">Understand how the web works, set up your development environment, and write your very first lines of HTML.</p>
+                    <ul class="list-none space-y-1 text-charcoal-dark text-sm ml-4">
+                        <li class="flex items-center gap-2"><span class="text-goldenrod">✓</span> Web Basics: Browsers, Servers, & URLs</li>
+                        <li class="flex items-center gap-2"><span class="text-goldenrod">✓</span> Setting up VS Code & Browser Tools</li>
+                        <li class="flex items-center gap-2"><span class="text-goldenrod">✓</span> Your First HTML Document Structure</li>
+                    </ul>
+                </div>
+                <!-- Module 2 -->
+                <div class="bg-white rounded-lg shadow-md p-6 border border-subtle-grey">
+                    <h3 class="text-xl font-semibold text-ocean-blue mb-2 flex items-center gap-3"><span class="text-sage-green text-2xl">2.</span> HTML5: Structuring Your Content</h3>
+                    <p class="text-charcoal-light mb-3">Dive deep into HTML5, learning to structure semantic, accessible, and SEO-friendly web pages.</p>
+                    <ul class="list-none space-y-1 text-charcoal-dark text-sm ml-4">
+                        <li class="flex items-center gap-2"><span class="text-goldenrod">✓</span> Semantic HTML: Headers, Navs, Sections, Articles</li>
+                        <li class="flex items-center gap-2"><span class="text-goldenrod">✓</span> Images, Links, & Lists</li>
+                        <li class="flex items-center gap-2"><span class="text-goldenrod">✓</span> Forms & Input Elements</li>
+                        <li class="flex items-center gap-2"><span class="text-goldenrod">✓</span> **Project:** Build a Simple Personal Profile Page</li>
+                    </ul>
+                </div>
+                <!-- Module 3 -->
+                <div class="bg-white rounded-lg shadow-md p-6 border border-subtle-grey">
+                    <h3 class="text-xl font-semibold text-ocean-blue mb-2 flex items-center gap-3"><span class="text-sage-green text-2xl">3.</span> CSS3: Styling Your Web Pages</h3>
+                    <p class="text-charcoal-light mb-3">Transform plain HTML into visually stunning designs using the power of CSS3.</p>
+                    <ul class="list-none space-y-1 text-charcoal-dark text-sm ml-4">
+                        <li class="flex items-center gap-2"><span class="text-goldenrod">✓</span> CSS Selectors & Properties</li>
+                        <li class="flex items-center gap-2"><span class="text-goldenrod">✓</span> The Box Model & Positioning</li>
+                        <li class="flex items-center gap-2"><span class="text-goldenrod">✓</span> Flexbox for Layouts</li>
+                        <li class="flex items-center gap-2"><span class="text-goldenrod">✓</span> Basic Animations & Transitions</li>
+                        <li class="flex items-center gap-2"><span class="text-goldenrod">✓</span> **Project:** Style Your Profile Page & Create a Basic Blog Layout</li>
+                    </ul>
+                </div>
+                <!-- Module 4 -->
+                <div class="bg-white rounded-lg shadow-md p-6 border border-subtle-grey">
+                    <h3 class="text-xl font-semibold text-ocean-blue mb-2 flex items-center gap-3"><span class="text-sage-green text-2xl">4.</span> CSS Layouts & Responsiveness</h3>
+                    <p class="text-charcoal-light mb-3">Master advanced layout techniques and ensure your designs adapt seamlessly to any screen size.</p>
+                    <ul class="list-none space-y-1 text-charcoal-dark text-sm ml-4">
+                        <li class="flex items-center gap-2"><span class="text-goldenrod">✓</span> Advanced Flexbox & Grid Techniques</li>
+                        <li class="flex items-center gap-2"><span class="text-goldenrod">✓</span> Media Queries for Adaptive Design</li>
+                        <li class="flex items-center gap-2"><span class="text-goldenrod">✓</span> Mobile-First Development Principles</li>
+                        <li class="flex items-center gap-2"><span class="text-goldenrod">✓</span> **Project:** Build a Responsive Landing Page</li>
+                    </ul>
+                </div>
+                <!-- Module 5 -->
+                <div class="bg-white rounded-lg shadow-md p-6 border border-subtle-grey">
+                    <h3 class="text-xl font-semibold text-ocean-blue mb-2 flex items-center gap-3"><span class="text-sage-green text-2xl">5.</span> JavaScript Fundamentals</h3>
+                    <p class="text-charcoal-light mb-3">Bring your web pages to life with dynamic and interactive elements using JavaScript.</p>
+                    <ul class="list-none space-y-1 text-charcoal-dark text-sm ml-4">
+                        <li class="flex items-center gap-2"><span class="text-goldenrod">✓</span> Variables, Data Types, & Operators</li>
+                        <li class="flex items-center gap-2"><span class="text-goldenrod">✓</span> Control Flow: Conditionals & Loops</li>
+                        <li class="flex items-center gap-2"><span class="text-goldenrod">✓</span> Functions & Scope</li>
+                        <li class="flex items-center gap-2"><span class="text-goldenrod">✓</span> DOM Manipulation: Interacting with HTML</li>
+                        <li class="flex items-center gap-2"><span class="text-goldenrod">✓</span> Event Listeners & User Interaction</li>
+                        <li class="flex items-center gap-2"><span class="text-goldenrod">✓</span> **Project:** Create an Interactive To-Do List</li>
+                    </ul>
+                </div>
+                <!-- Module 6 -->
+                <div class="bg-white rounded-lg shadow-md p-6 border border-subtle-grey">
+                    <h3 class="text-xl font-semibold text-ocean-blue mb-2 flex items-center gap-3"><span class="text-sage-green text-2xl">6.</span> Advanced JavaScript & Final Project</h3>
+                    <p class="text-charcoal-light mb-3">Consolidate your skills and build a comprehensive final project to showcase your expertise.</p>
+                    <ul class="list-none space-y-1 text-charcoal-dark text-sm ml-4">
+                        <li class="flex items-center gap-2"><span class="text-goldenrod">✓</span> Arrays & Objects</li>
+                        <li class="flex items-center gap-2"><span class="text-goldenrod">✓</span> Introduction to APIs (Fetch API)</li>
+                        <li class="flex items-center gap-2"><span class="text-goldenrod">✓</span> Error Handling & Debugging</li>
+                        <li class="flex items-center gap-2"><span class="text-goldenrod">✓</span> Final Project: Portfolio Website</li>
+                        <li class="flex items-center gap-2"><span class="text-goldenrod">✓</span> Deploying Your Website Live</li>
+                    </ul>
+                </div>
+                <!-- Add more modules as needed -->
+                <div class="text-center mt-8">
+                    <a href="#" class="text-ocean-blue font-semibold hover:underline">View Full Course Syllabus (PDF)</a>
+                </div>
+            </div>
+        </section>
+
+
+  <div class="flex-1 flex justify-center mt-8 md:mt-0">
+                <img src="./Cassandra pic.jpg" alt="Student happily coding a responsive website on a laptop, representing front-end development course success and project-based learning." class="w-full max-w-sm md:max-w-md rounded-lg shadow-2xl border-4 border-white object-cover" />
+            </div>
+        </section>
+
+        <!-- Section: Welcome Video -->
+        <section class="bg-white rounded-lg shadow-custom p-8 md:p-10 flex flex-col items-center text-center mb-10 border border-subtle-grey max-w-6xl w-full">
+            <h2 class="text-3xl font-montserrat font-bold text-ocean-blue mb-6">Your Journey Starts Here: A Quick Welcome!</h2>
+            <div class="w-full max-w-2xl aspect-video bg-gray-100 rounded-lg flex items-center justify-center text-charcoal-light text-center text-lg mb-6 border-2 border-sage-green overflow-hidden relative">
+                <!-- Replace 'YOUR_WELCOME_VIDEO_ID' with your actual YouTube video ID -->
+                <iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen class="absolute top-0 left-0 w-full h-full"></iframe>
+            </div>
+            <p class="text-charcoal-light max-w-xl mx-auto">
+                Get a personal introduction to the course and what exciting web development skills you're about to unlock!
+            </p>
+        </section>

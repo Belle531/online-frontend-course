@@ -1,0 +1,32 @@
+/* Root Color Variables */
+:root {
+  --bg-color: #FFFFFF;
+  --text-color: #111111;
+  --secondary-text: #333333;
+  --accent-color: #1E3A8A; /* Cobalt option */
+  --hover-accent: #2563EB; /* Bright blue on hover */
+  --button-bg: #14B8A6; /* Teal call-to-action */
+  --button-text: #FFFFFF;
+  --card-shadow: rgba(0, 0, 0, 0.1);
+}
+
+/* General Body Styles */
+body {
+  font-family: 'Inter', sans-serif;
+  color: var(--stormy-blue);
+  background-color: var(--blush-50);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 10px;
+}
+::-webkit-scrollbar-thumb {
+  background;

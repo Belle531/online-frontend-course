@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project Details - Responsive Portfolio Site</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="tailwind.config.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Montserrat:wght@500;600;700&family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="font-inter bg-off-white flex flex-col min-h-screen">
+
+    <!-- Header - Consistent with other pages -->
+    <header class="bg-white shadow-sm py-4 px-6 flex items-center justify-between mb-10 rounded-b-lg border-b-4 border-sage-green">
+        <div class="flex items-center gap-3">
+            <img src="./images/Online LOGO.jpg" alt="CMoore Front-End Development Fundamentals Logo - Online Course Platform" class="h-10 w-10 rounded-full border-2 border-sage-green shadow" />
+            <span class="text-2xl font-montserrat font-bold text-ocean-blue tracking-wide">CMoore Front-End Development Fundamentals</span>
+        </div>
+        <nav class="flex items-center gap-4 md:gap-6">
+            <a href="indexlanding.html" class="bg-goldenrod hover:bg-goldenrod-dark text-white font-bold px-5 py-2 rounded-lg shadow transition-colors duration-200 text-base ml-4">Back to Home</a>
+        </nav>
+    </header>
+
+    <!-- Main Content Area - Project Details -->
+    <main class="flex-1 flex flex-col items-center px-4 md:px-6 lg:px-8 py-12 w-full">
+        <div class="bg-white rounded-lg shadow-custom p-8 md:p-10 max-w-4xl w-full border border-subtle-grey">
+            <h1 class="text-3xl font-montserrat font-bold text-center text-ocean-blue mb-6">Responsive Portfolio Site Project</h1>
+            <p class="text-center text-charcoal-light mb-8">A detailed look into the "Responsive Portfolio Site" project from the Front-End Fundamentals course.</p>
+
+            <!-- Project Content - Reordered to single column -->
+            <div class="grid grid-cols-1 gap-8 mb-8">
+                <!-- Project Image/Screenshot and associated text details -->
+                <div class="text-center">
+                    <img src="https://placehold.co/600x400/8DAA9D/FFFFFF?text=Project+Screenshot" alt="Screenshot of the Responsive Portfolio Site" class="w-full rounded-lg shadow-md border-2 border-sage-green mb-4 mx-auto" />
+                    <p class="text-sm text-charcoal-light mb-6">A responsive design that adapts to all screen sizes.</p>
+
+                    <!-- Moved content from the second column here -->
+                    <div class="text-left">
+                        <h2 class="text-2xl font-montserrat font-semibold text-ocean-blue mb-2">Web Design Project: Responsive Portfolio Site</h2>
+                        <p class="text-charcoal-dark mb-4">
+                            A sleek, mobile-first portfolio website built with semantic HTML5, modern CSS3 (Flexbox & Grid), and interactive JavaScript.
+                        </p>
+
+                        <h3 class="text-xl font-montserrat font-semibold text-ocean-blue mb-3 mt-6">Technologies Used:</h3>
+                        <div class="flex flex-wrap gap-3 mb-8">
+                            <span class="inline-flex items-center px-4 py-2 bg-sage-green text-white text-sm rounded-full font-semibold shadow">HTML5</span>
+                            <span class="inline-flex items-center px-4 py-2 bg-goldenrod text-white text-sm rounded-full font-semibold shadow">CSS3</span>
+                            <span class="inline-flex items-center px-4 py-2 bg-ocean-blue text-white text-sm rounded-full font-semibold shadow">JavaScript</span>
+                            <span class="inline-flex items-center px-4 py-2 bg-charcoal-dark text-white text-sm rounded-full font-semibold shadow">Responsive Design</span>
+                        </div>
+
+                        <div class="mt-8 text-center md:text-left">
+                            <a href="https://github.com/your-repo-link/portfolio-project" target="_blank" class="inline-block bg-ocean-blue hover:bg-ocean-blue-dark text-white font-bold py-3 px-6 rounded-lg shadow-lg transition-colors duration-200 transform hover:scale-105 mr-4">
+                                <i class="fab fa-github mr-2"></i> View Code on GitHub
+                            </a>
+                            <a href="#" class="inline-block bg-sage-green hover:bg-sage-green-dark text-white font-bold py-3 px-6 rounded-lg shadow-lg transition-colors duration-200 transform hover:scale-105">
+                                <i class="fas fa-external-link-alt mr-2"></i> Live Demo (Coming Soon)
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Back to Courses/Dashboard Button -->
+            <div class="text-center mt-12">
+                <a href="indexlanding.html" class="inline-block bg-goldenrod hover:bg-goldenrod-dark text-white font-bold py-3 px-6 rounded-lg shadow-lg transition-colors duration-200 transform hover:scale-105">
+                    <i class="fas fa-arrow-left mr-2"></i> HOME
+                </a>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer - Consistent with other pages -->
+    <footer class="bg-off-white border-t border-subtle-grey py-8 px-6 text-center text-charcoal-light text-sm rounded-t-lg shadow-inner mt-auto w-full">
+        <div class="flex flex-col md:flex-row items-center justify-between max-w-5xl mx-auto gap-4">
+            <div class="text-center md:text-left">
+                &copy; <span id="current-year-footer"></span> CMoore Front-End Development Fundamentals. All rights reserved.
+            </div>
+            <div class="flex flex-col md:flex-row gap-4 md:gap-6">
+                <a href="privacy-policy.html" class="hover:text-ocean-blue transition-colors">Privacy Policy</a>
+                <a href="terms-of-service.html" class="hover:text-ocean-blue transition-colors">Terms of Service</a>
+                <a href="#" class="hover:text-ocean-blue transition-colors">Contact</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Chatbot Container -->
+    <div class="chatbot-container">
+        <!-- Chatbot Toggle Button -->
+        <button id="chatbot-toggle" class="bg-ocean-blue hover:bg-ocean-blue-dark text-white rounded-full w-14 h-14 flex items-center justify-center shadow-lg focus:outline-none focus:ring-2 focus:ring-ocean-blue focus:ring-opacity-50 transition-all duration-300 transform hover:scale-105">
+            <img src="https://placehold.co/40x40/0E5B75/FFFFFF?text=AI" alt="Chatbot Logo" class="w-10 h-10 rounded-full object-cover">
+        </button>
+
+        <!-- Chatbot Window -->
+        <div id="chatbot-window-main" class="chat-window hidden">
+            <!-- Chatbot Header -->
+            <div class="chat-header">
+                <div class="flex items-center gap-3">
+                    <img src="https://placehold.co/32x32/D6E2DD/0E5B75?text=AI" alt="CMoore AI Assistant" class="w-8 h-8 rounded-full object-cover border-2 border-white" />
+                    <span class="font-semibold text-lg">CMoore AI Assistant</span>
+                </div>
+                <button id="chatbot-close" class="text-white hover:text-goldenrod focus:outline-none">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
+            <!-- Chat Messages Display -->
+            <div id="chat-messages-display" class="chat-messages-display">
+                <div class="message-container message-bot">
+                    <span class="message-bubble">Hello! I'm your CMoore Learning Lab AI Assistant. How can I help you today?</span>
+                </div>
+            </div>
+
+            <!-- Chat Input Area -->
+            <div class="chat-input-area">
+                <input type="text" id="chat-input-field" placeholder="Type your message..." class="chat-input-field">
+                <button id="chat-send-button-element" class="chat-send-button-element">
+                    <i class="fas fa-paper-plane"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
