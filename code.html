@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    
+</body>
+</html>
+Here's a definition and explanation for each line:
+
+<!DOCTYPE html>
+
+Definition: This is the document type declaration.
+
+Explanation: It's not an HTML tag, but rather an instruction to the web browser about what version of HTML the page is written in. In this case, <!DOCTYPE html> declares that the document is an HTML5 document. This is crucial for browsers to render the page correctly in "standards mode," ensuring consistent behavior across different browsers.
+
+<html>
+
+Definition: This is the root element of an HTML page.
+
+Explanation: It signifies the beginning of the HTML document. All other elements in the HTML page (except for the <!DOCTYPE html> declaration) are descendants of this <html> tag. It often includes a lang attribute to declare the language of the document, which can be useful for accessibility and search engines.
+
+<head>
+
+Definition: This element contains meta-information about the HTML document.
+
+Explanation: The <head> section is not displayed directly on the web page when it's rendered in the browser. Instead, it holds metadata like the page's title, character set, viewport settings, links to external stylesheets, and other information that helps the browser or search engines understand and interact with the page.
+
+<meta charset="UTF-8" />
+
+Definition: This is a meta tag that specifies the character encoding for the HTML document.
+
+Explanation: charset="UTF-8" tells the browser to use the UTF-8 character encoding. UTF-8 is a universal character set that can represent almost any character from any language. This prevents issues with displaying special characters (like accents, symbols, or characters from non-Latin alphabets) correctly, avoiding "mojibake" (garbled text).
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+Definition: This meta tag controls the viewport's behavior on mobile devices.
+
+Explanation:
+
+name="viewport" indicates that this meta tag is related to the viewport.
+
+content="width=device-width, initial-scale=1.0" sets the viewport properties:
+
+width=device-width: Sets the width of the viewport to the width of the device's screen (in CSS pixels). This is essential for responsive web design, allowing the page to adapt to different screen sizes.
+
+initial-scale=1.0: Sets the initial zoom level when the page is first loaded. A value of 1.0 means no zoom, so the page is displayed at its actual size.
+
+<link href="" rel="stylesheet" />
+
+Definition: This element links an external resource to the HTML document.
+
+Explanation: This tag is typically used to link to external CSS (Cascading Style Sheets) files, which define the visual presentation of the HTML content.
+
+href="": This attribute specifies the URL of the external resource (e.g., the path to your CSS file). In your example, it's empty, meaning no stylesheet is currently linked.
+
+rel="stylesheet": This attribute defines the relationship between the current document and the linked document. Here, it indicates that the linked file is a stylesheet.
+
+<title>CMoore Front-End-Development Fundamentals Home</title>
+
+Definition: This element defines the title of the HTML document.
+
+Explanation: The text inside the <title> tags is displayed in the browser's title bar or tab. It's also used by search engines as the title of the page in search results, and by browsers for bookmark names. It's important for SEO (Search Engine Optimization) and user experience.
+
+</head>
+
+Definition: This is the closing tag for the <head> element.
+
+Explanation: It marks the end of the meta-information section of the HTML document.
+
+<body>
+
+Definition: This element contains the visible content of the HTML document.
+
+Explanation: Everything you see on a web page—text, images, links, videos, etc.—is placed within the <body> tags. This is the main content area of your web page.
+
+<h1></h1>
+
+Definition: This is a heading tag, specifically for the most important heading.
+
+Explanation: <h1> to <h6> are HTML heading tags, with <h1> being the highest (most important) and <h6> being the lowest. They are used to define headings and subheadings within the content. In your example, the <h1> tag is empty, meaning there's no visible heading text yet.
+
+</body>
+
+Definition: This is the closing tag for the <body> element.
+
+Explanation: It marks the end of the visible content section of the HTML document.
+
+</html>
+
+Definition: This is the closing tag for the <html> element.
+
+Explanation: It signifies the end of the HTML document.

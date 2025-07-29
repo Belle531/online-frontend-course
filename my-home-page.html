@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CMoore Web Dev Hub – Student Dashboard</title>
+
+  <!-- Tailwind & Fonts -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="tailwind.config.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Montserrat:wght@500;600;700&family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body class="font-inter bg-off-white text-charcoal-dark">
+
+  <!-- 🔷 Header -->
+  <header class="bg-white shadow-sm py-4 px-6 flex items-center justify-between mb-8 rounded-b-lg border-b-4 border-sage-green">
+    <div class="flex items-center gap-3">
+      <img src="./images/Online LOGO.jpg" alt="Course Logo" class="h-10 w-10 rounded-full border-2 border-sage-green shadow" />
+      <span class="text-2xl font-montserrat font-bold text-ocean-blue tracking-wide">CMoore Dev Hub</span>
+    </div>
+    <nav class="flex gap-4 font-semibold">
+      <a href="indexlanding.html" class="text-ocean-blue hover:text-goldenrod">Home</a>
+      <a href="contact.html" class="text-ocean-blue hover:text-goldenrod">Contact</a>
+      <a href="registration-form.html" class="text-ocean-blue hover:text-goldenrod">Register</a>
+      <a href="login.html" class="text-ocean-blue hover:text-goldenrod">Login</a>
+    </nav>
+  </header>
+
+  <!-- 🌟 Hero Welcome -->
+  <section class="bg-gradient-to-r from-sage-green via-off-white to-ocean-blue rounded-lg shadow-custom px-8 py-10 border border-subtle-grey max-w-6xl mx-auto mb-10">
+    <h1 class="text-4xl font-montserrat font-bold text-ocean-blue mb-4">Welcome to Your Front-End Dev Journey</h1>
+    <p class="text-lg text-charcoal-light mb-6">Explore modules, track your progress, and build real-world projects with Cassandra Moore’s step-by-step learning experience.</p>
+    <a href="project-details.html" class="bg-goldenrod hover:bg-goldenrod-dark text-white font-bold px-6 py-3 rounded-lg shadow transition duration-200">View Projects</a>
+  </section>
+
+  <!-- 🧩 Dashboard Modules -->
+  <section class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-16 px-6">
+    <div class="bg-white rounded-lg shadow-custom p-6 hover:bg-sage-green-light transition duration-200">
+      <h2 class="text-xl font-bold text-ocean-blue mb-2">Module 1: Computer Basics</h2>
+      <p class="text-sm text-charcoal-light">Start with the essentials—hardware, software, and typing skills.</p>
+    </div>
+    <div class="bg-white rounded-lg shadow-custom p-6 hover:bg-sage-green-light transition duration-200">
+      <h2 class="text-xl font-bold text-ocean-blue mb-2">Module 2: Internet of Things</h2>
+      <p class="text-sm text-charcoal-light">Understand how devices connect, communicate, and shape the web.</p>
+    </div>
+    <div class="bg-white rounded-lg shadow-custom p-6 hover:bg-sage-green-light transition duration-200">
+      <h2 class="text-xl font-bold text-ocean-blue mb-2">Module 3: HTML + CSS</h2>
+      <p class="text-sm text-charcoal-light">Learn how to structure and style beautiful, responsive pages.</p>
+    </div>
+    <div class="bg-white rounded-lg shadow-custom p-6 hover:bg-sage-green-light transition duration-200">
+      <h2 class="text-xl font-bold text-ocean-blue mb-2">Module 4: JavaScript Basics</h2>
+      <p class="text-sm text-charcoal-light">Add interactivity and dynamic behavior to your websites.</p>
+    </div>
+    <div class="bg-white rounded-lg shadow-custom p-6 hover:bg-sage-green-light transition duration-200">
+      <h2 class="text-xl font-bold text-ocean-blue mb-2">Module 5: Git & GitHub</h2>
+      <p class="text-sm text-charcoal-light">Version control mastery—track changes and publish projects.</p>
+    </div>
+    <div class="bg-white rounded-lg shadow-custom p-6 hover:bg-sage-green-light transition duration-200">
+      <h2 class="text-xl font-bold text-ocean-blue mb-2">Flashcards & Typing Lab</h2>
+      <p class="text-sm text-charcoal-light">Practice coding syntax and speed with learning tools.</p>
+    </div>
+  </section>
+
+  <!-- 📚 Student Toolbox -->
+  <section class="max-w-6xl mx-auto bg-white rounded-lg shadow-custom p-8 mb-10 border border-subtle-grey px-6">
+    <h2 class="text-2xl font-bold text-ocean-blue mb-6">Student Toolbox</h2>
+    <ul class="space-y-3 text-charcoal-light">
+      <li><a href="my-resume.html" class="text-goldenrod hover:underline">Meet Your Instructor</a></li>
+      <li><a href="payment.html" class="text-goldenrod hover:underline">Make a Payment</a></li>
+      <li><a href="privacy-policy.html" class="text-goldenrod hover:underline">Privacy Policy</a></li>
+      <li><a href="terms-of-service.html" class="text-goldenrod hover:underline">Terms & Conditions</a></li>
+    </ul>
+  </section>
+
+  <!-- 📬 Footer -->
+  <footer class="text-center py-6 text-sm text-charcoal-light bg-white border-t border-subtle-grey shadow-inner">
+    Need help? <a href="contact.html" class="text-ocean-blue hover:underline">Contact Cassandra</a><br>
+    &copy; 2025 CMoore Front-End Dev Fundamentals. All rights reserved.
+  </footer>
+
+</body>
+</html>
