@@ -1,0 +1,48 @@
+ <div class="fixed bottom-4 right-4 z-50">
+        <button id="chatbot-toggle" class="bg-ocean-blue text-white p-4 rounded-full shadow-lg hover:bg-ocean-blue-dark transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-ocean-blue focus:ring-opacity-50">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
+            </svg>
+        </button>
+
+        <div id="chatbot-window" class="hidden absolute bottom-20 right-0 w-80 h-96 bg-white rounded-lg shadow-xl flex flex-col border border-subtle-grey">
+            <div class="bg-ocean-blue text-white p-3 rounded-t-lg flex items-center justify-between">
+                <h3 class="font-semibold">CMoore AI Assistant</h3>
+                <button id="chatbot-close" class="p-1 rounded-full hover:bg-ocean-blue-dark">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+
+            <div class="flex-1 overflow-y-auto p-4 space-y-4">
+                <div class="flex items-start space-x-3">
+                    <img src="https://placehold.co/32x32/8DAA9D/FFFFFF?text=AI" alt="AI Profile" class="w-8 h-8 rounded-full object-cover">
+                    <div class="bg-subtle-grey p-3 rounded-lg max-w-[80%] text-charcoal-dark">
+                        <p class="text-sm">Hello! How can I assist you with your Front-End Fundamentals course today? Feel free to ask about modules, assignments, or general web development concepts.</p>
+                        <span class="text-xs text-charcoal-light block text-right mt-1">1:38 PM</span>
+                    </div>
+                </div>
+                <div class="flex items-start justify-end space-x-3">
+                    <div class="bg-ocean-blue text-white p-3 rounded-lg max-w-[80%]">
+                        <p class="text-sm">What's the difference between `position: relative` and `position: absolute`?</p>
+                        <span class="text-xs text-white block text-right mt-1">1:39 PM</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="border-t border-subtle-grey p-4">
+                <div class="flex items-center space-x-2">
+                    <input type="text" placeholder="Type your message..." class="flex-1 p-2 border border-subtle-grey rounded-lg text-charcoal-dark focus:outline-none focus:ring-1 focus:ring-ocean-blue">
+                    <button class="bg-ocean-blue text-white p-2 rounded-lg hover:bg-ocean-blue-dark transition-colors duration-200">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+     <script src="chatbot.script.js"></script>
+</body>
+</html>
